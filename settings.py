@@ -123,7 +123,7 @@ SLEEP_INTERVAL = 20 * 60 # 20 minutes
 # How long we should pause scraping nightly.
 OVERNIGHT_SLEEP_INTERVAL = 9 * 60 * 60 # 9 hours
 
-# What time past we want to resume scraping. Scraping ends at 00:00 (midnight) local time.
+# What time we want to resume scraping. Scraping pauses at 00:00 (midnight) local time.
 WAKEUP_TIME = 9
 
 # Which slack channel to post the listings into.
