@@ -1,12 +1,24 @@
 import os
 
-## Price
+## Filters
 
 # The minimum rent you want to pay per month.
 MIN_PRICE = 1500
 
 # The maximum rent you want to pay per month.
 MAX_PRICE = 2000
+
+# The maximum price per room you want to pay per month. Filtered in the code.
+MAX_PER_ROOM = 1000
+
+# The minimum number of bedrooms you want.
+MIN_BEDROOMS = 4
+
+# The minimum number of bathrooms you want.
+MIN_BATHROOMS = 2
+
+# The search terms you want to use.
+SEARCH_TERMS = "garage"
 
 ## Location preferences
 
@@ -105,7 +117,14 @@ CRAIGSLIST_HOUSING_SECTION = 'apa'
 # How long we should sleep between scrapes of Craigslist.
 # Too fast may get rate limited.
 # Too slow may miss listings.
+# If set to 0 we randomize the interval.
 SLEEP_INTERVAL = 20 * 60 # 20 minutes
+
+# How long we should pause scraping nightly.
+OVERNIGHT_SLEEP_INTERVAL = 9 * 60 * 60 # 9 hours
+
+# What time past we want to resume scraping. Scraping ends at 00:00 (midnight) local time.
+WAKEUP_TIME = 9
 
 # Which slack channel to post the listings into.
 SLACK_CHANNEL = "#housing"
@@ -113,6 +132,9 @@ SLACK_CHANNEL = "#housing"
 # The token that allows us to connect to slack.
 # Should be put in private.py, or set as an environment variable.
 SLACK_TOKEN = os.getenv('SLACK_TOKEN', "")
+
+# Google sheet ID to output to.
+SHEET_ID = ""
 
 # Any private settings are imported here.
 try:
