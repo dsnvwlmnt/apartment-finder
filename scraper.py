@@ -54,10 +54,14 @@ def scrape_area(area):
 
 #orig    cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, area=area, category=settings.CRAIGSLIST_HOUSING_SECTION,
 #orig                             filters={'max_price': settings.MAX_PRICE, "min_price": settings.MIN_PRICE})
-    cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, area=area, category=settings.CRAIGSLIST_HOUSING_SECTION,
-                             filters={'max_price': settings.MAX_PRICE, 'min_price': settings.MIN_PRICE,
-                             'query': settings.SEARCH_TERMS, 'min_bedrooms': settings.MIN_BEDROOMS,
-                             'min_bathrooms': settings.MIN_BATHROOMS})
+    try:
+        cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, area=area, category=settings.CRAIGSLIST_HOUSING_SECTION,
+                                filters={'max_price': settings.MAX_PRICE, 'min_price': settings.MIN_PRICE,
+                                'query': settings.SEARCH_TERMS, 'min_bedrooms': settings.MIN_BEDROOMS,
+                                'min_bathrooms': settings.MIN_BATHROOMS})
+    except (MaxRetryError, ConnectionError) as e:
+        print('Caught exception: ' + e)
+        time.sleep(300)     # pause for 5 minutes
 
     results = []
 #orig    gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=20)
