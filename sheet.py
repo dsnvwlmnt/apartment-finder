@@ -49,29 +49,6 @@ def get_credentials():
 def post_listing_to_sheet(sheet, listing):
     """
     """
-#    values = [
-#        [
-#            'testA1', 'testA2?'
-#        ]
-#    ]
-#    values = [['testA1', 'testA2']]
-#    body = {
-#        'values': values
-#    }
-#    body = {
-#        'values': listing
-#    }
-#    body = {
-#        'values': [[1,2,3,4,5,6]]
-#    }
-
-#    'price': u'$1100',
-#    'bedrooms': u'5',
-#ppb calculated
-#    'where': u'inner sunset / UCSF',
-#    'name': u'Near SFSU, UCSF and NEWLY FURNISHED - CLEAN, CONVENIENT and CLEAN!',
-#    'url': u'http://sfbay.craigslist.org/sfc/roo/4851150747.html',
-
     try:
         price = int(float(listing['price'].replace("$", "")))
     except Exception:
@@ -79,10 +56,17 @@ def post_listing_to_sheet(sheet, listing):
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
     body = {
-        'values': [[listing['price'], listing['bedrooms'], price_per_bedroom, listing['where'], listing['name'], listing['url']]]
+        'values': [[listing['price'],
+                    listing['bedrooms'],
+                    price_per_bedroom,
+                    listing['where'],
+                    listing['name'],
+                    listing['url']]]
     }
     sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                           range='A1:A1', body=body, valueInputOption='USER_ENTERED').execute()
+                                         range='A1:A1',
+                                         body=body,
+                                         valueInputOption='USER_ENTERED').execute()
 
 def post_listings_to_sheet(sheet, listings):
     """
@@ -95,10 +79,19 @@ def post_listings_to_sheet(sheet, listings):
             pass
         bedrooms = int(listing['bedrooms'])
         price_per_bedroom = price // bedrooms
-        values.append([listing['price'], listing['bedrooms'], price_per_bedroom, listing['where'], listing['name'], listing['url']])
+        values.append([listing['price'],
+                       listing['bedrooms'],
+                       price_per_bedroom,
+                       listing['where'],
+                       listing['name'],
+                       listing['url']])
 
     body = {'values': values}
     sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                           range='Database!A1:A1', body=body, valueInputOption='USER_ENTERED').execute()
+                                         range='Database!A1:A1',
+                                         body=body,
+                                         valueInputOption='USER_ENTERED').execute()
     sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                           range='A1:A1', body=body, valueInputOption='USER_ENTERED').execute()
+                                         range='A1:A1',
+                                         body=body,
+                                         valueInputOption='USER_ENTERED').execute()

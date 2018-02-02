@@ -1,5 +1,5 @@
 """
-Default settings. Can be overridden in a private.py or config/private.py file.
+Default settings. Should be overridden in a private.py or config/private.py file.
 """
 
 import os
