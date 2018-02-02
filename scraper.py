@@ -77,8 +77,6 @@ def scrape_area(area):
 
         # Don't store the listing if it already exists.
         if listing is None:
-#'where' is the neighborhood for US craigslist in brackets in the title (can't filter by this on .ca but there's still neighborhood info in brackets based on whatever ppl input, not sure if standardized, i think no)
-#            input("id: " + str(result["id"]) + "; name: " + str(result["name"]) + "; url: " + str(result["url"]) + "; datetime: " + str(result["datetime"]) + "; price: " + str(result["price"]) + "; where: " + str(result["where"]) + "; has_image: " + str(result["has_image"]) + "; has_map: " + str(result["has_map"]) + "; geotag: " + str(result["geotag"]) + "; footage: " + str(result["area"]) + "; bedrooms: " + str(result["bedrooms"]))
 #skip for now:
 #            if result["where"] is None:
 #                input("we are inside where = none")
@@ -110,19 +108,13 @@ def scrape_area(area):
                 price = float(result["price"].replace("$", ""))
             except Exception:
                 pass
-#2800.0            input("price: " + str(price))
-
-#            input("price: " + str(price) + "; bedrooms: " + str(result["bedrooms"]) + "; maxperroom: " + str(settings.MAX_PER_ROOM))
             bedrooms = int(result["bedrooms"])
             if bedrooms > 0:
-#                input("inside bedrooms > 0")
                 price_per_bedroom = price / bedrooms
-#1487.5                input(str(price_per_bedroom))
-# if $/room is too high, skip ad
+                # if $/room is too high, skip ad
                 if price_per_bedroom > settings.MAX_PER_ROOM:
                     continue
 
-#other results data i could use: id, datetime, has_image, has_map, geotag
             # Create the listing object.
             listing = Listing(link=result["url"],
                               created=parse(result["datetime"]),
@@ -143,7 +135,7 @@ def scrape_area(area):
 
             # Return the result if it's near a bart station, or if it is in an area we defined.
 #skip for now            if len(result["bart"]) > 0 or len(result["area"]) > 0:
-#add a tab if i re-add if condition
+#add a tab indent if i re-add if condition
             results.append(result)
 
     return results
@@ -171,20 +163,9 @@ def do_scrape():
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
 
-# tmp test
-#    post_listing_to_sheet(service, result)
-#this does a1 a2 a3 in 3 rows:
-#    post_listing_to_sheet(service, [["valuea1"], ["valuea2"], ["valuea3"]])
-#this doesn't work
-#    post_listing_to_sheet(service, ['testA1', 'testA2'])
-#this works
-#    post_listing_to_sheet(service, [['testA1', 'testA2', 'testA3']])
-# tmp test
-
     # Post each result to slack.
     for result in all_results:
         post_listing_to_slack(sc, result)
-#        post_listing_to_sheet(service, result)
 
     # Post all results to sheet at the same time, to avoid google api quotas.
     post_listings_to_sheet(service, all_results)
