@@ -35,21 +35,15 @@ def post_listing_to_slack(sc, listing):
     :param sc: A slack client.
     :param listing: A record of the listing.
     """
-#orig    desc = "{0} | {1} | {2} | {3} | <{4}>".format(listing["area"], listing["price"], listing["bart_dist"], listing["name"], listing["url"])
-
-#price has $ prefix here because we're passing unprocessed CL generator results to this function
+    # Price has $ prefix here because we're passing unprocessed CL generator results to this function.
     try:
         price = int(float(listing['price'].replace("$", "")))
     except Exception:
         pass
-
-#    input("price: " + str(listing["price"]) + "; bedrooms: " + str(listing["bedrooms"]) + "; name: " + str(listing["name"]) + "; url: " + str(listing["url"]))
-
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
+
     desc = "{} | *{}* | {} | {} | <{}>".format(listing['price'] + ' / ' + listing['bedrooms'] + 'br = $', str(price_per_bedroom), listing['where'], listing['name'], listing['url'])
-#slack example: rockridge | $2865 | 3.2675400041019533 | upper Floor w balcony | http://sfbay.craigslist.org/eby/apa/5486908953.html
-#db example: 135|https://vancouver.craigslist.ca/van/apa/d/kits-2-bedroom-available-open/6466099772.html|2018-01-19 20:12:00.000000||49.270727|-123.149273|Kits 2 Bedroom available! OPEN House 7pm|1800.0|Kitsilano|6466099772||
     sc.api_call(
         'chat.postMessage', channel=settings.SLACK_CHANNEL, text=desc,
         username='pybot', icon_emoji=':robot_face:'
