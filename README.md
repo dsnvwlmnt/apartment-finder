@@ -34,7 +34,7 @@ Before using this bot, you'll need a Slack team, a channel for the bot to post i
 
 * Create a Slack team, which you can do [here](https://slack.com/create#email).  
 * Create a channel for the listings to be posted into.  [Here's](https://get.slack.help/hc/en-us/articles/201402297-Creating-a-channel) help on this.  It's suggested to use `#housing` as the name of the channel.
-* Create a Slack App, which you can do [here](https://api.slack.com/apps/new)
+* Create a Slack App, which you can do [here](https://api.slack.com/apps/new).
 * Get a Slack API token, which you can do [here](https://api.slack.com/docs/oauth-test-tokens).  [Here's](https://get.slack.help/hc/en-us/articles/215770388-Creating-and-regenerating-API-tokens) more information on the process.
 
 #### Google Sheets
@@ -42,7 +42,7 @@ Before using this bot, you'll need a Slack team, a channel for the bot to post i
 If you would like the bot to post results to a Google Sheet:
 
 * Install the Google Client Library: `pip install --upgrade google-api-python-client`
-* Turn on the Google Sheets API and set up credentials by following the [instructions in Step 1 here](https://developers.google.com/sheets/api/quickstart/python).
+* Turn on the Google Sheets API and set up credentials by following the instructions in Step 1 [here](https://developers.google.com/sheets/api/quickstart/python).
 
 --------------------
 ### Configuration
@@ -67,7 +67,7 @@ If you would like the bot to post results to a Google Sheet:
 
 * Create a file called `private.py` in this folder.
     * Add a value called `SLACK_TOKEN` that contains your Slack API token.
-    * If Google Sheet functionality is desired, add a value called `SHEET_ID` that contains your Sheet ID, e.g. 1Rvbe6xaboCbxJtiCOB2uoG2Qbp0dfzHCRfn1Ff5d80w.
+    * If Google Sheet functionality is desired, add a value called `SHEET_ID` that contains your Sheet ID, e.g. `1Rvbe6xaboCbxJtiCOB2uoG2Qbp0dfzHCRfn1Ff5d80w`.
     * Add any other values you want, to `private.py`.
 
 --------------------

@@ -56,9 +56,7 @@ def scrape_area(area):
 #orig                             filters={'max_price': settings.MAX_PRICE, "min_price": settings.MIN_PRICE})
     try:
         cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, area=area, category=settings.CRAIGSLIST_HOUSING_SECTION,
-                                filters={'max_price': settings.MAX_PRICE, 'min_price': settings.MIN_PRICE,
-                                'query': settings.SEARCH_TERMS, 'min_bedrooms': settings.MIN_BEDROOMS,
-                                'min_bathrooms': settings.MIN_BATHROOMS})
+                                filters=settings.SEARCH_FILTERS)
     except (MaxRetryError, ConnectionError) as e:
         print('Caught exception: ' + e)
         time.sleep(300)     # pause for 5 minutes
