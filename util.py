@@ -43,11 +43,16 @@ def post_listing_to_slack(sc, listing):
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
 
-    desc = "{} | *{}* | {} | {} | <{}>".format(listing['price'] + ' / ' + listing['bedrooms'] + 'br = $', str(price_per_bedroom), listing['where'], listing['name'], listing['url'])
-    sc.api_call(
-        'chat.postMessage', channel=settings.SLACK_CHANNEL, text=desc,
-        username='pybot', icon_emoji=':robot_face:'
-    )
+    desc = "{} | *{}* | {} | {} | <{}>".format(listing['price'] + ' / ' + listing['bedrooms'] + 'br = $',
+                                               str(price_per_bedroom),
+                                               listing['where'],
+                                               listing['name'],
+                                               listing['url'])
+    sc.api_call('chat.postMessage',
+                channel=settings.SLACK_CHANNEL,
+                text=desc,
+                username='pybot',
+                icon_emoji=':robot_face:')
 
 def find_points_of_interest(geotag, location):
     """
@@ -86,10 +91,8 @@ def find_points_of_interest(geotag, location):
             if hood in location.lower():
                 area = hood
 
-    return {
-        "area_found": area_found,
-        "area": area,
-        "near_bart": near_bart,
-        "bart_dist": bart_dist,
-        "bart": bart
-    }
+    return {"area_found": area_found,
+            "area": area,
+            "near_bart": near_bart,
+            "bart_dist": bart_dist,
+            "bart": bart}

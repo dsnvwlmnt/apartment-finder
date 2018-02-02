@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from dateutil.parser import parse
 from util import post_listing_to_slack, find_points_of_interest
 from slackclient import SlackClient
+import sys
 import time
 import settings
 from httplib2 import Http
@@ -69,7 +70,8 @@ def scrape_area(area):
             result = next(gen)
         except StopIteration:
             break
-        except Exception:
+        except Exception as e:
+            print('{}: Exception: {}'.format(time.ctime(), e), file=sys.stderr)
             continue
         listing = session.query(Listing).filter_by(cl_id=result["id"]).first()
 
@@ -122,19 +124,17 @@ def scrape_area(area):
 
 #other results data i could use: id, datetime, has_image, has_map, geotag
             # Create the listing object.
-            listing = Listing(
-                link=result["url"],
-                created=parse(result["datetime"]),
-                lat=lat,
-                lon=lon,
-                name=result["name"],
-                price=price,
-                location=result["where"],
-                cl_id=result["id"],
-                area=result["area"],
-                bart_stop=result["bart"],
-                bedrooms=bedrooms
-            )
+            listing = Listing(link=result["url"],
+                              created=parse(result["datetime"]),
+                              lat=lat,
+                              lon=lon,
+                              name=result["name"],
+                              price=price,
+                              location=result["where"],
+                              cl_id=result["id"],
+                              area=result["area"],
+                              bart_stop=result["bart"],
+                              bedrooms=bedrooms)
 
             # Save the listing so we don't grab it again.
             session.add(listing)
