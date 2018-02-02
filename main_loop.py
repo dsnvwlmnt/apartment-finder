@@ -7,6 +7,7 @@ import random
 import datetime as dt
 
 def main():
+    input('This version should be run from scraper.py. Otherwise, press any key to continue.')
     while True:
         if dt.datetime.now().hour >= settings.WAKEUP_TIME:
             print("{}: Starting scrape cycle".format(time.ctime()))
