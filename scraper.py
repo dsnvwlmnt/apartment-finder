@@ -43,7 +43,6 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-#this is done for each area e.g. bnc, nvn, van
 def scrape_area(area):
     """
     Scrapes craigslist for a certain geographic area, and finds the latest listings.
@@ -51,24 +50,24 @@ def scrape_area(area):
     :return: A list of results.
     """
 
-#    input("site: " + settings.CRAIGSLIST_SITE + "; area: " + area + "; category: " + settings.CRAIGSLIST_HOUSING_SECTION + "; maxprice: " + str(settings.MAX_PRICE) + "; min price: " + str(settings.MIN_PRICE))
-
-#orig    cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, area=area, category=settings.CRAIGSLIST_HOUSING_SECTION,
-#orig                             filters={'max_price': settings.MAX_PRICE, "min_price": settings.MIN_PRICE})
     try:
-        cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, area=area, category=settings.CRAIGSLIST_HOUSING_SECTION,
-                                filters=settings.SEARCH_FILTERS)
-    except (MaxRetryError, ConnectionError) as e:
-        print('Caught exception: ' + e)
-        time.sleep(300)     # pause for 5 minutes
+        cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE,
+                                 area=area,
+                                 category=settings.CRAIGSLIST_HOUSING_SECTION,
+                                 filters=settings.SEARCH_FILTERS)
+        results = []
+        gen = cl_h.get_results(sort_by='newest', geotagged=True)
+    except (MaxRetryError, ConnectionError, ValueError) as exc:
+        print('{}: Exception: {}. Sleeping for 12 minutes.'.format(time.ctime(), exc), file=sys.stderr)
+        time.sleep(720)
 
-    results = []
-#orig    gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=20)
-    gen = cl_h.get_results(sort_by='newest', geotagged=True)
     while True:
         try:
             result = next(gen)
         except StopIteration:
+            break
+        except (MaxRetryError, ConnectionError, ValueError) as exc:
+            print('{}: Exception: {}'.format(time.ctime(), exc), file=sys.stderr)
             break
         except Exception as e:
             print('{}: Exception: {}'.format(time.ctime(), e), file=sys.stderr)
