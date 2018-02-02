@@ -171,6 +171,7 @@ def do_scrape():
     post_listings_to_sheet(service, all_results)
 
 def main():
+    print("{}: Starting scrape cycle".format(time.ctime()))
     try:
         do_scrape()
     except KeyboardInterrupt:
