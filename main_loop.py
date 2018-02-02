@@ -21,9 +21,7 @@ def main():
             else:
                 print("{}: Successfully finished scraping".format(time.ctime()))
             if settings.SLEEP_INTERVAL == 0:
-                # randomize polling time
-#first ver, worked good, random amt from ~4.7min-71min:
-#                time.sleep(random.randint(281,4263))
+                # randomize polling time for Windows (no cron)
                 skip_flag = random.randint(1,1000)
                 if skip_flag > 222:
                     #normal minimum sleep 80% of the time 5-48min

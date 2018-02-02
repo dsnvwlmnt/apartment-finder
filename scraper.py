@@ -9,6 +9,7 @@ from slackclient import SlackClient
 import sys
 import time
 import settings
+import traceback
 from httplib2 import Http
 from apiclient import discovery
 from sheet import get_credentials, post_listings_to_sheet
@@ -187,3 +188,18 @@ def do_scrape():
 
     # Post all results to sheet at the same time, to avoid google api quotas.
     post_listings_to_sheet(service, all_results)
+
+def main():
+    try:
+        do_scrape()
+    except KeyboardInterrupt:
+        print("Exiting....")
+        sys.exit(1)
+    except Exception as exc:
+        print("Error with the scraping:", sys.exc_info()[0])
+        traceback.print_exc()
+    else:
+        print("{}: Successfully finished scraping".format(time.ctime()))
+
+if __name__ == "__main__":
+    main()
