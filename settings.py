@@ -1,24 +1,28 @@
+"""
+Default settings. Can be overridden in a config/private.py file.
+"""
+
 import os
 
 ## Filters
 
 # The minimum rent you want to pay per month.
-MIN_PRICE = 1500
+MIN_PRICE = 0
 
 # The maximum rent you want to pay per month.
-MAX_PRICE = 2000
+MAX_PRICE = 99999
 
 # The maximum price per room you want to pay per month. Filtered in the code.
-MAX_PER_ROOM = 1000
+MAX_PER_ROOM = 9999
 
 # The minimum number of bedrooms you want.
-MIN_BEDROOMS = 4
+MIN_BEDROOMS = 0
 
 # The minimum number of bathrooms you want.
-MIN_BATHROOMS = 2
+MIN_BATHROOMS = 0
 
 # The search terms you want to use.
-SEARCH_TERMS = "garage"
+SEARCH_TERMS = ""
 
 ## Location preferences
 
@@ -142,7 +146,7 @@ try:
 except Exception:
     pass
 
-# Any external private settings are imported from here.
+# Any external private settings are imported here.
 try:
     from config.private import *
 except Exception:

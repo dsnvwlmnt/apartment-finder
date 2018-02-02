@@ -1,19 +1,19 @@
-Apartment finder
--------------------
+## Apartment finder
 
-This repo contains the code for a bot that will scrape Craigslist for real-time listings matching specific criteria, then alert you in Slack.  This will let you quickly see the best new listings, and contact the owners.  You can adjust the settings to change your price range, what neighborhoods you want to look in, and what transit stations and other points of interest you'd like to be close to.
+Forked from [VikParuchuri/apartment-finder](https://github.com/VikParuchuri/apartment-finder).
 
-I successfully used this tool to find an apartment when I moved from Boston to SF.  It saved a good amount of time and money.  Read more about it [here](https://www.dataquest.io/blog/apartment-finding-slackbot/).
+This repo contains the code for a bot that will scrape Craigslist for real-time listings matching specific criteria, alert you in Slack, and post to Google Sheets.  This will let you quickly see the best new listings, and contact the owners.  You can adjust the settings to change your price range, what neighborhoods you want to look in, and what transit stations and other points of interest you'd like to be close to.
 
 It's recommended to follow the Docker installation and usage instructions.
-
-Settings
---------------------
 
 Look in `settings.py` for a full list of all the configuration options.  Here's a high level overview:
 
 * `MIN_PRICE` -- the minimum listing price you want to search for.
 * `MAX_PRICE` -- the minimum listing price you want to search for.
+* `MAX_PER_ROOM` -- the maximum average price per room you want to search for.
+* `MIN_BEDROOMS` -- the minimum number of bedrooms you want to search for.
+* `MIN_BATHROOMS` -- the minimum number of bathrooms you want to search for.
+* `SEARCH_TERMS` -- custom query you want to search for.
 * `CRAIGSLIST_SITE` -- the regional Craigslist site you want to search in.
 * `AREAS` -- a list of areas of the regional Craiglist site that you want to search in.
 * `BOXES` -- coordinate boxes of the neighborhoods you want to look in.
@@ -23,17 +23,29 @@ Look in `settings.py` for a full list of all the configuration options.  Here's 
 * `CRAIGSLIST_HOUSING_SECTION` -- the subsection of Craigslist housing that you want to look in.
 * `SLACK_CHANNEL` -- the Slack channel you want the bot to post in.
 
-External Setup
---------------------
+Read more about the original author's use of the tool [here](https://www.dataquest.io/blog/apartment-finding-slackbot/).
 
-Before using this bot, you'll need a Slack team, a channel for the bot to post into, and a Slack API key:
+--------------------
+### External Setup
+
+## Slack
+
+Before using this bot, you'll need a Slack team, a channel for the bot to post into, a Slack App, and a Slack API key:
 
 * Create a Slack team, which you can do [here](https://slack.com/create#email).  
 * Create a channel for the listings to be posted into.  [Here's](https://get.slack.help/hc/en-us/articles/201402297-Creating-a-channel) help on this.  It's suggested to use `#housing` as the name of the channel.
+* Create a Slack App, which you can do [here](https://api.slack.com/apps/new)
 * Get a Slack API token, which you can do [here](https://api.slack.com/docs/oauth-test-tokens).  [Here's](https://get.slack.help/hc/en-us/articles/215770388-Creating-and-regenerating-API-tokens) more information on the process.
 
-Configuration
+## Google Sheets
+
+If you would like the bot to post results to a Google Sheet:
+
+* Install the Google Client Library: `pip install --upgrade google-api-python-client`
+* Turn on the Google Sheets API and set up credentials by following the [instructions in Step 1 here](https://developers.google.com/sheets/api/quickstart/python).
+
 --------------------
+### Configuration
 
 ## Docker
 
@@ -55,10 +67,11 @@ Configuration
 
 * Create a file called `private.py` in this folder.
     * Add a value called `SLACK_TOKEN` that contains your Slack API token.
-    * Add any other values you want to `private.py`.
+    * If Google Sheet functionality is desired, add a value called `SHEET_ID` that contains your Sheet ID, e.g. 1Rvbe6xaboCbxJtiCOB2uoG2Qbp0dfzHCRfn1Ff5d80w.
+    * Add any other values you want, to `private.py`.
 
-Installation + Usage
 --------------------
+### Installation + Usage
 
 ## Docker
 
@@ -72,18 +85,18 @@ Installation + Usage
 ## Manual
 
 * Look in the `Dockerfile`, and make sure you install any of the apt packages listed there.
-* Install Python 3 using Anaconda or another method.
+* Install Python 3.
 * Install the Python requirements with `pip install -r requirements.txt`.
 * Run the program with `python main_loop.py`. Results will be posted to your #Housing channel if successful.
 
-Troubleshooting
 ---------------------
+### Troubleshooting
 
 ## Docker
 
 * Use `docker ps` to get the id of the container running the bot.
 * Run `docker exec -it {YOUR_CONTAINER_ID} /bin/bash` to get a command shell inside the container.
-* Run `sqlite listings.db` to run the sqlite command line tool and inspect the database state (the only table is also called `listings`).
+* Run `sqlite3 listings.db` to run the sqlite command line tool and inspect the database state (the only table is also called `listings`).
     * `select * from listings` will get all of the stored listings.
     * If nothing is in the database, you may need to wait for a bit, or verify that your settings aren't too restrictive and aren't finding any listings.
     * You can see how many listings are being found by looking at the logs.
@@ -92,10 +105,10 @@ Troubleshooting
 ## Manual
 
 * Look at the stdout of the main program.
-* Inspect `listings.db` to ensure listings are being added.
+* Inspect `listings.db` to ensure listings are being added (see Docker section above for more details).
 
-Deploying
 ---------------------
+### Deploying
 
 * Create a server that has Docker installed.  It's suggested to use Digital Ocean.
 * Follow the configuration + installation instructions for Docker above.
