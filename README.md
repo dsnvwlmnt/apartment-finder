@@ -28,7 +28,7 @@ Read more about the original author's use of the tool [here](https://www.dataque
 --------------------
 ### External Setup
 
-## Slack
+#### Slack
 
 Before using this bot, you'll need a Slack team, a channel for the bot to post into, a Slack App, and a Slack API key:
 
@@ -37,7 +37,7 @@ Before using this bot, you'll need a Slack team, a channel for the bot to post i
 * Create a Slack App, which you can do [here](https://api.slack.com/apps/new)
 * Get a Slack API token, which you can do [here](https://api.slack.com/docs/oauth-test-tokens).  [Here's](https://get.slack.help/hc/en-us/articles/215770388-Creating-and-regenerating-API-tokens) more information on the process.
 
-## Google Sheets
+#### Google Sheets
 
 If you would like the bot to post results to a Google Sheet:
 
@@ -47,7 +47,7 @@ If you would like the bot to post results to a Google Sheet:
 --------------------
 ### Configuration
 
-## Docker
+#### Docker
 
 * Create a folder called `config`, then put a file called `private.py` inside.
 * Specify new values for any of the settings above in `private.py`.
@@ -63,7 +63,7 @@ If you would like the bot to post results to a Google Sheet:
         * `MIN_PRICE`
         * `MAX_PRICE`
 
-## Manual
+#### Manual
 
 * Create a file called `private.py` in this folder.
     * Add a value called `SLACK_TOKEN` that contains your Slack API token.
@@ -73,7 +73,7 @@ If you would like the bot to post results to a Google Sheet:
 --------------------
 ### Installation + Usage
 
-## Docker
+#### Docker
 
 * Make sure to do the steps in the configuration section above first.
 * Install Docker by following [these instructions](https://docs.docker.com/engine/installation/).
@@ -82,7 +82,7 @@ If you would like the bot to post results to a Google Sheet:
 * To run the program with your own configuration:
     * `docker run -d -e SLACK_TOKEN={YOUR_SLACK_TOKEN} -v {ABSOLUTE_PATH_TO_YOUR_CONFIG_FOLDER}:/opt/wwc/apartment-finder/config dataquestio/apartment-finder`
     
-## Manual
+#### Manual
 
 * Look in the `Dockerfile`, and make sure you install any of the apt packages listed there.
 * Install Python 3.
@@ -92,7 +92,7 @@ If you would like the bot to post results to a Google Sheet:
 ---------------------
 ### Troubleshooting
 
-## Docker
+#### Docker
 
 * Use `docker ps` to get the id of the container running the bot.
 * Run `docker exec -it {YOUR_CONTAINER_ID} /bin/bash` to get a command shell inside the container.
@@ -102,7 +102,7 @@ If you would like the bot to post results to a Google Sheet:
     * You can see how many listings are being found by looking at the logs.
 * Inspect the logs using `tail -f -n 1000 /opt/wwc/logs/afinder.log`.
 
-## Manual
+#### Manual
 
 * Look at the stdout of the main program.
 * Inspect `listings.db` to ensure listings are being added (see Docker section above for more details).
