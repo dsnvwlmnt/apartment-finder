@@ -47,8 +47,7 @@ def post_listing_to_slack(sc, listing):
 
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
-    desc = "{0} | {1} | {2} | <{3}>".format(listing['price'] + ' / ' + listing['bedrooms'] + 'br = $' + str(price_per_bedroom), listing['where'], listing['name'], listing['url'])
-#    desc = "{0} | {1} | {2} | {3} | <{4}>".format('THIS IS A TEST', listing['price'] + ' / ' + listing['bedrooms'] + 'br = $' + str(price_per_bedroom), listing['where'], listing['name'], listing['url'])
+    desc = "{} | *{}* | {} | {} | <{}>".format(listing['price'] + ' / ' + listing['bedrooms'] + 'br = $', str(price_per_bedroom), listing['where'], listing['name'], listing['url'])
 #slack example: rockridge | $2865 | 3.2675400041019533 | upper Floor w balcony | http://sfbay.craigslist.org/eby/apa/5486908953.html
 #db example: 135|https://vancouver.craigslist.ca/van/apa/d/kits-2-bedroom-available-open/6466099772.html|2018-01-19 20:12:00.000000||49.270727|-123.149273|Kits 2 Bedroom available! OPEN House 7pm|1800.0|Kitsilano|6466099772||
     sc.api_call(
