@@ -40,7 +40,9 @@ def main():
                 time.sleep(settings.SLEEP_INTERVAL)
         else:
             if settings.SLEEP_INTERVAL == 0:
-                time.sleep(settings.OVERNIGHT_SLEEP_INTERVAL)
+                # The logic here ensures proper sleep length if you launch the script overnight
+                time.sleep(settings.OVERNIGHT_SLEEP_INTERVAL - dt.datetime.now().hour*60*60)
+                print("{}: Overnight sleep".format(time.ctime()))
 
 if __name__ == "__main__":
     main()
