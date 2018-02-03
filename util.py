@@ -43,11 +43,11 @@ def post_listing_to_slack(sc, listing):
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
 
-    desc = "{} | *{}* | {} | {} | <{}>".format(listing['price'] + ' / ' + listing['bedrooms'] + 'br = $',
-                                               str(price_per_bedroom),
-                                               listing['where'],
-                                               listing['name'],
-                                               listing['url'])
+    desc = "{}*{}* | {} | {} | <{}>".format(listing['price'] + ' / ' + listing['bedrooms'] + 'br = ',
+                                            '$' + str(price_per_bedroom),
+                                            listing['where'],
+                                            listing['name'],
+                                            listing['url'])
     sc.api_call('chat.postMessage',
                 channel=settings.SLACK_CHANNEL,
                 text=desc,

@@ -87,11 +87,14 @@ def post_listings_to_sheet(sheet, listings):
                        listing['url']])
 
     body = {'values': values}
-    sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                         range='Database!A1:A1',
-                                         body=body,
-                                         valueInputOption='USER_ENTERED').execute()
-    sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                         range='A1:A1',
-                                         body=body,
-                                         valueInputOption='USER_ENTERED').execute()
+    try:
+        sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
+                                             range='Database!A1:A1',
+                                             body=body,
+                                             valueInputOption='USER_ENTERED').execute()
+        sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
+                                             range='A1:A1',
+                                             body=body,
+                                             valueInputOption='USER_ENTERED').execute()
+    except Exception as e:
+        print('{}: Posting to Google Sheets failed with: {}'.format(time.ctime(), e), file=sys.stderr))
