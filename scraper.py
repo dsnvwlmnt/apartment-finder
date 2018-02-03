@@ -167,8 +167,9 @@ def do_scrape():
     for result in all_results:
         post_listing_to_slack(sc, result)
 
-    # Post all results to sheet at the same time, to avoid google api quotas.
-    post_listings_to_sheet(service, all_results)
+    if SHEET_ID:
+        # Post all results to sheet at the same time, to avoid google api quotas.
+        post_listings_to_sheet(service, all_results)
 
 def main():
     print("{}: Starting scrape cycle".format(time.ctime()))
