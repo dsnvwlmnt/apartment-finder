@@ -67,6 +67,7 @@ def scrape_area(area):
             result = next(gen)
         except StopIteration:
             break
+        # Catch all errors for which we want to stop hitting the CL servers:
         except (MaxRetryError, ConnectionError, ValueError) as exc:
             print('{}: Exception: {}'.format(time.ctime(), exc), file=sys.stderr)
             break
