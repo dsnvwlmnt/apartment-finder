@@ -69,6 +69,11 @@ If you would like the bot to post results to a Google Sheet:
     * Add a value called `SLACK_TOKEN` that contains your Slack API token.
     * If Google Sheet functionality is desired, add a value called `SHEET_ID` that contains your Sheet ID, e.g. `1Rvbe6xaboCbxJtiCOB2uoG2Qbp0dfzHCRfn1Ff5d80w`.
     * Add any other values you want, to `private.py`.
+* Windows users: Create `task.bat` in the root folder.
+    * Inside the file, put `python "C:\<apartment-finder folder>\scraper.py" >> task.log`.
+    * Create a task using Task Scheduler to launch this file.
+    * Set Command to: `"C:\<apartment-finder folder>\task.bat"` (with quotes!)
+    * Set Working Directory to: `C:\<apartment-finder folder>` (without quotes!)
 
 --------------------
 ### Installation + Usage
