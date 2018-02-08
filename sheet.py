@@ -87,14 +87,11 @@ def post_listings_to_sheet(sheet, listings):
                        listing['url']])
 
     body = {'values': values}
-    try:
-        sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                             range='Database!A1:A1',
-                                             body=body,
-                                             valueInputOption='USER_ENTERED').execute()
-        sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                             range='A1:A1',
-                                             body=body,
-                                             valueInputOption='USER_ENTERED').execute()
-    except ConnectionError:
-        sys.exit(1)
+    sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
+                                         range='Database!A1:A1',
+                                         body=body,
+                                         valueInputOption='USER_ENTERED').execute()
+    sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
+                                         range='A1:A1',
+                                         body=body,
+                                         valueInputOption='USER_ENTERED').execute()
