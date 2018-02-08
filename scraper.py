@@ -164,7 +164,7 @@ def do_scrape():
                               discoveryServiceUrl=discoveryUrl)
 
     # Post all results to sheet at the same time, to avoid google api quotas.
-    if SHEET_ID:
+    if settings.SHEET_ID:
         post_listings_to_sheet(service, all_results)
 
     # Post each result to slack.
