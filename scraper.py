@@ -58,22 +58,21 @@ def scrape_area(area):
                                  filters=settings.SEARCH_FILTERS)
         results = []
         gen = cl_h.get_results(sort_by='newest', geotagged=True)
-    except (MaxRetryError, ConnectionError, ValueError) as exc:
-        print('{}: Exception: {}. Sleeping for 12 minutes.'.format(time.ctime(), exc), file=sys.stderr)
-        time.sleep(720)
+    except (ConnectionError, ValueError):
+        print('{}: Pause connection polling for 3 minutes.'.format(time.ctime()))
+        time.sleep(180)
 
     while True:
         try:
             result = next(gen)
         except StopIteration:
             break
-        # Catch all errors for which we want to stop hitting the CL servers:
-        except (MaxRetryError, ConnectionError, ValueError) as exc:
-            print('{}: Exception: {}'.format(time.ctime(), exc), file=sys.stderr)
+        # Catch errors we want to stop hitting the CL servers with:
+        except (ConnectionError, ValueError):
             break
-        except Exception as e:
-            print('{}: Exception: {}'.format(time.ctime(), e), file=sys.stderr)
+        except Exception:
             continue
+
         listing = session.query(Listing).filter_by(cl_id=result["id"]).first()
 
         # Don't store the listing if it already exists.
@@ -164,13 +163,13 @@ def do_scrape():
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
 
+    # Post all results to sheet at the same time, to avoid google api quotas.
+    if SHEET_ID:
+        post_listings_to_sheet(service, all_results)
+
     # Post each result to slack.
     for result in all_results:
         post_listing_to_slack(sc, result)
-
-    if SHEET_ID:
-        # Post all results to sheet at the same time, to avoid google api quotas.
-        post_listings_to_sheet(service, all_results)
 
 def main():
     print("{}: Starting scrape cycle".format(time.ctime()))

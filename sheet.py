@@ -96,5 +96,5 @@ def post_listings_to_sheet(sheet, listings):
                                              range='A1:A1',
                                              body=body,
                                              valueInputOption='USER_ENTERED').execute()
-    except Exception as e:
-        print('{}: Posting to Google Sheets failed with: {}'.format(time.ctime(), e), file=sys.stderr)
+    except ConnectionError:
+        sys.exit(1)
