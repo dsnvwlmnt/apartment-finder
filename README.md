@@ -11,6 +11,7 @@ Look in `settings.py` for a full list of all the configuration options.  Here's 
 * `MIN_PRICE` -- the minimum listing price you want to search for.
 * `MAX_PRICE` -- the minimum listing price you want to search for.
 * `MAX_PER_ROOM` -- the maximum average price per room you want to search for.
+* `MAX_PER_ROOM_3BR` -- the maximum average price per room you want to search for on ads with 3 bedrooms.
 * `MIN_BEDROOMS` -- the minimum number of bedrooms you want to search for.
 * `MIN_BATHROOMS` -- the minimum number of bathrooms you want to search for.
 * `SEARCH_TERMS` -- custom query you want to search for.

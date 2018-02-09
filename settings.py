@@ -6,13 +6,16 @@ import os
 
 ## Search Filters
 SEARCH_FILTERS = {'min_price': 0,       # The minimum rent you want to pay per month.
-                  'max_price': 99999,   # The maximum rent you want to pay per month.
+                  'max_price': 9999999, # The maximum rent you want to pay per month.
                   'query': '',          # The search terms you want to use.
                   'min_bedrooms': 0,    # The minimum number of bedrooms you want.
                   'min_bathrooms': 0}   # The minimum number of bathrooms you want.
 
 # The maximum price per room you want to pay per month. Filtered in the code.
-MAX_PER_ROOM = 9999
+MAX_PER_ROOM = 999999
+
+# Additional custom filter. If None, it's ignored. Otherwise, SEARCH_FILTERS.min_bedrooms is overrode with 3, and for results with exactly 3 bedrooms it will filter by maximum price per room you want to pay per month, defined here.
+MAX_PER_ROOM_3BR = None
 
 ## Location preferences
 
@@ -128,7 +131,7 @@ SLACK_CHANNEL = '#housing'
 SLACK_TOKEN = os.getenv('SLACK_TOKEN', '')
 
 # Google sheet ID to output to.
-SHEET_ID = ''
+SHEET_ID = None
 
 # Any private settings are imported here.
 try:

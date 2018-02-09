@@ -51,6 +51,9 @@ def scrape_area(area):
     :return: A list of results.
     """
 
+    if settings.MAX_PER_ROOM_3BR is not None:
+        settings.SEARCH_FILTERS['min_bedrooms'] = 3
+
     try:
         cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE,
                                  area=area,
@@ -79,10 +82,7 @@ def scrape_area(area):
         if listing is None:
 #skip for now:
 #            if result["where"] is None:
-#                input("we are inside where = none")
-
-                # If there is no string identifying which neighborhood the result is from, skip it.
-#skip for now:
+#                # If there is no string identifying which neighborhood the result is from, skip it.
 #                continue
 
             lat = 0
@@ -92,12 +92,12 @@ def scrape_area(area):
                 lat = result["geotag"][0]
                 lon = result["geotag"][1]
 
-                # Annotate the result with information about the area it's in and points of interest near it.
 #skip for now:
+#                # Annotate the result with information about the area it's in and points of interest near it.
 #                geo_data = find_points_of_interest(result["geotag"], result["where"])
 #                result.update(geo_data)
 #            else:
-#indent back into else, if re-add the if/else above
+#indent these back into else, when re-adding the else above
             result["area"] = ""
             result["bart"] = ""
 #might also need to set "area_found", "near_bart", "bart_dist"
@@ -112,7 +112,11 @@ def scrape_area(area):
             if bedrooms > 0:
                 price_per_bedroom = price / bedrooms
                 # if $/room is too high, skip ad
-                if price_per_bedroom > settings.MAX_PER_ROOM:
+                if (  (bedrooms == 3
+                       and price_per_bedroom > settings.MAX_PER_ROOM_3BR
+                      )
+                       or price_per_bedroom > settings.MAX_PER_ROOM
+                   ):
                     continue
 
             # Create the listing object.
@@ -135,14 +139,13 @@ def scrape_area(area):
 
             # Return the result if it's near a bart station, or if it is in an area we defined.
 #skip for now            if len(result["bart"]) > 0 or len(result["area"]) > 0:
-#add a tab indent if i re-add if condition
             results.append(result)
 
     return results
 
 def do_scrape():
     """
-    Runs the craigslist scraper, and posts data to slack.
+    Runs the craigslist scraper, and posts data to slack and Google sheets.
     """
 
     # Get all the results from craigslist.
@@ -155,16 +158,16 @@ def do_scrape():
     # Create a slack client.
     sc = SlackClient(settings.SLACK_TOKEN)
 
-    # Authenticate and create Google sheet service.
-    credentials = get_credentials()
-    http = credentials.authorize(Http())
-    discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
-                    'version=v4')
-    service = discovery.build('sheets', 'v4', http=http,
-                              discoveryServiceUrl=discoveryUrl)
+    if settings.SHEET_ID is not None:
+        # Authenticate and create Google sheet service.
+        credentials = get_credentials()
+        http = credentials.authorize(Http())
+        discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
+                        'version=v4')
+        service = discovery.build('sheets', 'v4', http=http,
+                                  discoveryServiceUrl=discoveryUrl)
 
-    # Post all results to sheet at the same time, to avoid google api quotas.
-    if settings.SHEET_ID:
+        # Post all results to sheet at the same time, to avoid Google api quotas.
         post_listings_to_sheet(service, all_results)
 
     # Post each result to slack.
