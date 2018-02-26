@@ -81,78 +81,80 @@ def scrape_area(area, cl_bugged):
             continue
 
         listing = session.query(Listing).filter_by(cl_id=result["id"]).first()
-
-        # Store the listing if it doesn't already exist. If it exists, skip.
-        if listing is None:
+        # Don't store the listing if it already exists.
+        if listing:
+            continue
 #skip for now:
 #            if result["where"] is None:
 #                # If there is no string identifying which neighborhood the result is from, skip it.
 #                continue
+#when re-add this use bshlenk's version  if listing or result["where"] is None:
+#                                            continue
 
-            lat = 0
-            lon = 0
-            if result["geotag"] is not None:
-                # Assign the coordinates.
-                lat = result["geotag"][0]
-                lon = result["geotag"][1]
+        lat = 0
+        lon = 0
+        if result["geotag"] is not None:
+            # Assign the coordinates.
+            lat = result["geotag"][0]
+            lon = result["geotag"][1]
 
 #skip for now:
-#                # Annotate the result with information about the area it's in and points of interest near it.
-#                geo_data = find_points_of_interest(result["geotag"], result["where"])
-#                result.update(geo_data)
-#            else:
+#            # Annotate the result with information about the area it's in and points of interest near it.
+#            geo_data = find_points_of_interest(result["geotag"], result["where"])
+#            result.update(geo_data)
+#        else:
 #indent these back into else, when re-adding the else above
-            result["area"] = ""
-            result["bart"] = ""
+        result["area"] = ""
+        result["bart"] = ""
 #might also need to set "area_found", "near_bart", "bart_dist"
 
-            price = 0
+        price = 0
 
-            if cl_bugged:
-                #beautifulsoup out the price
-                if price < settings.MIN_PRICE or price > settings.MAX_PRICE
-                    continue
-            else:
-                # Try parsing the price.
-                try:
-                    price = float(result["price"].replace("$", ""))
-                except Exception:
-                    pass
+        if cl_bugged:
+            #beautifulsoup out the price
+            if price < settings.MIN_PRICE or price > settings.MAX_PRICE
+                continue
+        else:
+            # Try parsing the price.
+            try:
+                price = float(result["price"].replace("$", ""))
+            except Exception:
+                pass
 
-            if price == 0:
+        if price == 0:
+            continue
+
+        bedrooms = int(result["bedrooms"])
+        if bedrooms > 0:
+            price_per_bedroom = price / bedrooms
+            # if $/room is too high, skip ad
+            if (  (bedrooms == 3
+                   and price_per_bedroom > settings.MAX_PER_ROOM_3BR
+                  )
+                   or price_per_bedroom > settings.MAX_PER_ROOM
+               ):
                 continue
 
-            bedrooms = int(result["bedrooms"])
-            if bedrooms > 0:
-                price_per_bedroom = price / bedrooms
-                # if $/room is too high, skip ad
-                if (  (bedrooms == 3
-                       and price_per_bedroom > settings.MAX_PER_ROOM_3BR
-                      )
-                       or price_per_bedroom > settings.MAX_PER_ROOM
-                   ):
-                    continue
+        # Create the listing object.
+        listing = Listing(link=result["url"],
+                          created=parse(result["datetime"]),
+                          lat=lat,
+                          lon=lon,
+                          name=result["name"],
+                          price=price,
+                          location=result["where"],
+                          cl_id=result["id"],
+                          area=result["area"],
+                          bart_stop=result["bart"],
+                          bedrooms=bedrooms)
 
-            # Create the listing object.
-            listing = Listing(link=result["url"],
-                              created=parse(result["datetime"]),
-                              lat=lat,
-                              lon=lon,
-                              name=result["name"],
-                              price=price,
-                              location=result["where"],
-                              cl_id=result["id"],
-                              area=result["area"],
-                              bart_stop=result["bart"],
-                              bedrooms=bedrooms)
+        # Save the listing so we don't grab it again.
+        session.add(listing)
+        session.commit()
 
-            # Save the listing so we don't grab it again.
-            session.add(listing)
-            session.commit()
-
-            # Return the result if it's near a bart station, or if it is in an area we defined.
+        # Return the result if it's near a bart station, or if it is in an area we defined.
 #skip for now            if len(result["bart"]) > 0 or len(result["area"]) > 0:
-            results.append(result)
+        results.append(result)
 
     return results
 
