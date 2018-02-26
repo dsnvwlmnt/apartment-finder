@@ -44,12 +44,16 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def scrape_area(area):
+def scrape_area(area, cl_bugged):
     """
     Scrapes craigslist for a certain geographic area, and finds the latest listings.
     :param area:
     :return: A list of results.
     """
+
+    if not cl_bugged:
+        settings.SEARCH_FILTERS['min_price'] = MIN_PRICE
+		settings.SEARCH_FILTERS['max_price'] = MAX_PRICE
 
     if settings.MAX_PER_ROOM_3BR is not None:
         settings.SEARCH_FILTERS['min_bedrooms'] = 3
@@ -78,7 +82,7 @@ def scrape_area(area):
 
         listing = session.query(Listing).filter_by(cl_id=result["id"]).first()
 
-        # Don't store the listing if it already exists.
+        # Store the listing if it doesn't already exist. If it exists, skip.
         if listing is None:
 #skip for now:
 #            if result["where"] is None:
@@ -102,12 +106,19 @@ def scrape_area(area):
             result["bart"] = ""
 #might also need to set "area_found", "near_bart", "bart_dist"
 
-            # Try parsing the price.
             price = 0
-            try:
-                price = float(result["price"].replace("$", ""))
-            except Exception:
-                pass
+
+            if cl_bugged:
+                #beautifulsoup out the price
+                if price < settings.MIN_PRICE or price > settings.MAX_PRICE
+                    continue
+            else:
+                # Try parsing the price.
+                try:
+                    price = float(result["price"].replace("$", ""))
+                except Exception:
+                    pass
+
             if price == 0:
                 continue
 
@@ -139,7 +150,6 @@ def scrape_area(area):
             session.add(listing)
             session.commit()
 
-
             # Return the result if it's near a bart station, or if it is in an area we defined.
 #skip for now            if len(result["bart"]) > 0 or len(result["area"]) > 0:
             results.append(result)
@@ -151,15 +161,26 @@ def do_scrape():
     Runs the craigslist scraper, and posts data to slack and Google sheets.
     """
 
+    # Check for CL price bug: can't filter by price, because no price in title.
+    # For e.g., if CL is bugged, this URL will give 0 results:
+    # https://vancouver.craigslist.ca/search/van/apa?postedToday=1&min_price=1
+    cl_bugged = False
+    cl_test = CraigslistHousing(site=settings.CRAIGSLIST_SITE,
+                                area=settings.AREAS[0],
+                                category=settings.CRAIGSLIST_HOUSING_SECTION,
+                                filters={'posted_today': True, 'min_price': 1})
+    gen_test = cl_test.get_results(limit=1)
+    try:
+        result_test = next(gen_test)
+    except StopIteration:
+        cl_bugged = True
+
     # Get all the results from craigslist.
     all_results = []
     for area in settings.AREAS:
-        all_results += scrape_area(area)
+        all_results += scrape_area(area, cl_bugged)
 
     print("{}: Got {} results".format(time.ctime(), len(all_results)))
-
-    # Create a slack client.
-    sc = SlackClient(settings.SLACK_TOKEN)
 
     if settings.SHEET_ID is not None:
         # Authenticate and create Google sheet service.
@@ -172,6 +193,9 @@ def do_scrape():
 
         # Post all results to sheet at the same time, to avoid Google api quotas.
         post_listings_to_sheet(service, all_results)
+
+    # Create a slack client.
+    sc = SlackClient(settings.SLACK_TOKEN)
 
     # Post each result to slack.
     for result in all_results:
