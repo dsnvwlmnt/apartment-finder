@@ -5,11 +5,15 @@ Default settings. Should be overridden in a private.py or config/private.py file
 import os
 
 ## Search Filters
-SEARCH_FILTERS = {'min_price': 0,       # The minimum rent you want to pay per month.
-                  'max_price': 9999999, # The maximum rent you want to pay per month.
-                  'query': '',          # The search terms you want to use.
+SEARCH_FILTERS = {'query': '',          # The search terms you want to use.
                   'min_bedrooms': 0,    # The minimum number of bedrooms you want.
                   'min_bathrooms': 0}   # The minimum number of bathrooms you want.
+
+# The minimum rent you want to pay per month.
+MIN_PRICE = 0
+
+# The maximum rent you want to pay per month.
+MAX_PRICE = 9999999
 
 # The maximum price per room you want to pay per month. Filtered in the code.
 MAX_PER_ROOM = 999999
