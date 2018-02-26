@@ -4,6 +4,8 @@ Default settings. Should be overridden in a private.py or config/private.py file
 
 import os
 
+DEBUG = False
+
 ## Search Filters
 SEARCH_FILTERS = {'query': '',          # The search terms you want to use.
                   'min_bedrooms': 0,    # The minimum number of bedrooms you want.

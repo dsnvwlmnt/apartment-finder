@@ -64,7 +64,11 @@ def scrape_area(area, cl_bugged):
                                  category=settings.CRAIGSLIST_HOUSING_SECTION,
                                  filters=settings.SEARCH_FILTERS)
         results = []
-        gen = cl_h.get_results(sort_by='newest', geotagged=True)
+        if DEBUG:
+            limit = 1
+        else:
+            limit = None
+        gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=limit)
     except (ConnectionError, ValueError):
         print('{}: Pause connection polling for 3 minutes.'.format(time.ctime()))
         time.sleep(180)
