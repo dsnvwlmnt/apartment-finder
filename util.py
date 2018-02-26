@@ -36,6 +36,7 @@ def post_listing_to_slack(sc, listing):
     :param listing: A record of the listing.
     """
     # Price has $ prefix here because we're passing unprocessed CL generator results to this function.
+    price = 0
     try:
         price = int(float(listing['price'].replace("$", "")))
     except Exception:

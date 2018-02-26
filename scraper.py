@@ -108,6 +108,9 @@ def scrape_area(area):
                 price = float(result["price"].replace("$", ""))
             except Exception:
                 pass
+            if price == 0:
+                continue
+
             bedrooms = int(result["bedrooms"])
             if bedrooms > 0:
                 price_per_bedroom = price / bedrooms

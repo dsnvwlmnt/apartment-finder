@@ -49,6 +49,7 @@ def get_credentials():
 def post_listing_to_sheet(sheet, listing):
     """
     """
+    price = 0
     try:
         price = int(float(listing['price'].replace("$", "")))
     except Exception:
@@ -73,6 +74,7 @@ def post_listings_to_sheet(sheet, listings):
     """
     values = []
     for listing in listings:
+        price = 0
         try:
             price = int(float(listing['price'].replace("$", "")))
         except Exception:
