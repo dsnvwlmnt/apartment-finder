@@ -232,21 +232,3 @@ def do_scrape():
     # Post each result to slack.
     for result in all_results:
         post_listing_to_slack(sc, result)
-
-def main():
-    print("{}: Starting scrape cycle".format(time.ctime()))
-    try:
-        do_scrape()
-    except KeyboardInterrupt:
-        print("Exiting...")
-        sys.exit(1)
-    except Exception as exc:
-        print("Error with the scraping:", sys.exc_info()[0])
-        traceback.print_exc()
-        sys.exit(1)
-    else:
-        print("{}: Successfully finished scraping".format(time.ctime()))
-        sys.exit(0)
-
-if __name__ == "__main__":
-    main()

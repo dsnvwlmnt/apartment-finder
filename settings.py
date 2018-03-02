@@ -5,8 +5,6 @@ file.
 
 import os
 
-DEBUG = False
-
 ## Search Filters
 SEARCH_FILTERS = {'query': '',          # Search terms you want to use.
                   'min_bedrooms': 0,    # Minimum number of bedrooms you want.
@@ -131,6 +129,12 @@ TRANSIT_STATIONS = {
 CRAIGSLIST_HOUSING_SECTION = 'apa'
 
 ## System settings
+
+DEBUG = False
+
+# Setting this to True will prevent looping forever and ignore the sleep
+# interval and wakeup settings below.
+RUN_ONCE = False
 
 # How long we should sleep between scrapes of Craigslist.
 # Too fast may get rate limited.
