@@ -10,6 +10,7 @@ import sys
 import time
 import settings
 import traceback
+import urllib.request
 from httplib2 import Http
 from apiclient import discovery
 from sheet import get_credentials, post_listings_to_sheet
@@ -17,6 +18,23 @@ from sheet import get_credentials, post_listings_to_sheet
 engine = create_engine('sqlite:///listings.db', echo=False)
 
 Base = declarative_base()
+
+class RunLog(Base):
+    """
+    A table to store a log of program executions.
+    """
+
+    __tablename__ = 'runlog'
+
+    id = Column(Integer, primary_key=True)
+    debug = Column(Boolean)
+    time_start = Column(DateTime)
+    time_end = Column(DateTime)
+    ip_start = Column(String)
+    ip_end = Column(String)
+    num_results = Column(Integer)
+    exit_code = Column(Integer)
+    error_message = Column(String)
 
 class Listing(Base):
     """
@@ -192,6 +210,8 @@ def do_scrape():
     for area in settings.AREAS:
         all_results += scrape_area(area, cl_bugged)
 
+    # Store number of results for this run.
+    # TODO: add this to db: len(all_results)
     print("{}: Got {} results".format(time.ctime(), len(all_results)))
 
     if settings.SHEET_ID is not None:
@@ -218,13 +238,15 @@ def main():
     try:
         do_scrape()
     except KeyboardInterrupt:
-        print("Exiting....")
+        print("Exiting...")
         sys.exit(1)
     except Exception as exc:
         print("Error with the scraping:", sys.exc_info()[0])
         traceback.print_exc()
+        sys.exit(1)
     else:
         print("{}: Successfully finished scraping".format(time.ctime()))
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
