@@ -31,7 +31,9 @@ def scrape_area(area, cl_bugged):
                                  category=settings.CRAIGSLIST_HOUSING_SECTION,
                                  filters=settings.SEARCH_FILTERS)
         results = []
-        if DEBUG:
+        if settings.DEBUG:
+            input('Generator initial call (press any key)...')
+        if settings.DEBUG:
             gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=1)
         else:
             gen = cl_h.get_results(sort_by='newest', geotagged=True)
@@ -41,6 +43,8 @@ def scrape_area(area, cl_bugged):
         time.sleep(180)
 
     while True:
+        if settings.DEBUG:
+            input('Generator next call (press any key)...')
         try:
             result = next(gen)
         except StopIteration:
@@ -83,11 +87,12 @@ def scrape_area(area, cl_bugged):
 #might also need to set "area_found", "near_bart", "bart_dist"
 
         price = 0
-
         if cl_bugged:
             print('{}: Craigslist prices are bugged, implement+test ' \
                   'beautifulsoup price scraping!'.format(time.ctime()))
-            # TODO: get the price from title or post body using beautifulsoup
+            # TODO: get the price from title or post body using beautifulsoup.
+            # Until this is coded, you'll get no new results when CL is bugged.
+            # Which is fine since you wouldn't get any results anyway.
             if price < settings.MIN_PRICE or price > settings.MAX_PRICE
                 continue
         else:
@@ -95,8 +100,11 @@ def scrape_area(area, cl_bugged):
             try:
                 price = float(result["price"].replace("$", ""))
             except Exception:
+                if settings.DEBUG:
+                    input('Did not get a numeric price (press any key)...')
                 pass
 
+        # Skip the ad if we can't find a non-zero price.
         if price == 0:
             continue
 
@@ -140,14 +148,19 @@ def do_scrape():
     Runs the craigslist scraper, and posts data to slack and Google sheets.
     """
 
-    # Check for CL price bug: can't filter by price, because no price in title.
-    # For e.g., if CL is bugged, this URL will give 0 results:
+    # If the last run gave no results, check for CL price bug (can't filter by
+    # price, because no price in title). For e.g., if CL is bugged, this URL
+    # will give 0 results:
     # https://vancouver.craigslist.ca/search/van/apa?postedToday=1&min_price=1
+#TODO insert db check of last run's num_results
+#if last_run_no_results
     cl_bugged = False
     cl_test = CraigslistHousing(site=settings.CRAIGSLIST_SITE,
                                 area=settings.AREAS[0],
                                 category=settings.CRAIGSLIST_HOUSING_SECTION,
                                 filters={'posted_today': True, 'min_price': 1})
+    if settings.DEBUG:
+        input('Calling test generator (press any key)...')
     gen_test = cl_test.get_results(limit=1)
     try:
         result_test = next(gen_test)
@@ -178,6 +191,8 @@ def do_scrape():
     # Create a slack client.
     sc = SlackClient(settings.SLACK_TOKEN)
 
+    if settings.DEBUG:
+        input('Going to loop post_listing_to_slack (press any key)...')
     # Post each result to slack.
     for result in all_results:
         post_listing_to_slack(sc, result)

@@ -47,6 +47,8 @@ def get_credentials():
 def post_listing_to_sheet(sheet, listing):
     """
     """
+    if settings.DEBUG:
+        input('In post_listing_to_sheet (press any key)...')
     price = 0
     try:
         price = int(float(listing['price'].replace("$", "")))
@@ -72,6 +74,8 @@ def post_listing_to_sheet(sheet, listing):
 def post_listings_to_sheet(sheet, listings):
     """
     """
+    if settings.DEBUG:
+        input('In post_listings_to_sheet (press any key)...')
     values = []
     for listing in listings:
         price = 0

@@ -10,8 +10,6 @@ from scraper import do_scrape
 def scrape():
     print("{}: Starting scrape cycle".format(time.ctime()))
     try:
-        if settings.DEBUG:
-            input('Calling do_scrape (press any key)...')
         do_scrape()
     except KeyboardInterrupt:
         print("Exiting....")
