@@ -46,7 +46,7 @@ session = Session()
 
 def scrape_area(area, cl_bugged):
     """
-    Scrapes craigslist for a certain geographic area, and finds the latest listings.
+    Scrapes craigslist for a geographic area and finds the latest listings.
     :param area:
     :return: A list of results.
     """
@@ -65,12 +65,12 @@ def scrape_area(area, cl_bugged):
                                  filters=settings.SEARCH_FILTERS)
         results = []
         if DEBUG:
-            limit = 1
+            gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=1)
         else:
-            limit = None
-        gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=limit)
+            gen = cl_h.get_results(sort_by='newest', geotagged=True)
     except (ConnectionError, ValueError):
-        print('{}: Pause connection polling for 3 minutes.'.format(time.ctime()))
+        print('{}: Pause connection polling for ' \
+              '3 minutes.'.format(time.ctime()))
         time.sleep(180)
 
     while True:
@@ -90,7 +90,8 @@ def scrape_area(area, cl_bugged):
             continue
 #skip for now:
 #            if result["where"] is None:
-#                # If there is no string identifying which neighborhood the result is from, skip it.
+#                # If there is no string identifying which neighborhood the 
+#                # result is from, skip it.
 #                continue
 #when re-add this use bshlenk's version  if listing or result["where"] is None:
 #                                            continue
@@ -103,8 +104,10 @@ def scrape_area(area, cl_bugged):
             lon = result["geotag"][1]
 
 #skip for now:
-#            # Annotate the result with information about the area it's in and points of interest near it.
-#            geo_data = find_points_of_interest(result["geotag"], result["where"])
+#            # Annotate the result with information about the area it's in and
+#            # points of interest near it.
+#            geo_data = find_points_of_interest(result["geotag"], 
+#                                               result["where"])
 #            result.update(geo_data)
 #        else:
 #indent these back into else, when re-adding the else above
@@ -115,7 +118,9 @@ def scrape_area(area, cl_bugged):
         price = 0
 
         if cl_bugged:
-            #beautifulsoup out the price
+            print('{}: Craigslist prices are bugged, implement+test ' \
+                  'beautifulsoup price scraping!'.format(time.ctime()))
+            #get the price from title or post body using beautifulsoup
             if price < settings.MIN_PRICE or price > settings.MAX_PRICE
                 continue
         else:
@@ -156,7 +161,8 @@ def scrape_area(area, cl_bugged):
         session.add(listing)
         session.commit()
 
-        # Return the result if it's near a bart station, or if it is in an area we defined.
+        # Return the result if it's near a bart station, or if it is in an area
+        # we defined.
 #skip for now            if len(result["bart"]) > 0 or len(result["area"]) > 0:
         results.append(result)
 
@@ -197,7 +203,7 @@ def do_scrape():
         service = discovery.build('sheets', 'v4', http=http,
                                   discoveryServiceUrl=discoveryUrl)
 
-        # Post all results to sheet at the same time, to avoid Google api quotas.
+        # Post all results to sheet simultaneously, to avoid Google api quotas
         post_listings_to_sheet(service, all_results)
 
     # Create a slack client.

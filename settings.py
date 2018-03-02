@@ -1,5 +1,6 @@
 """
-Default settings. Should be overridden in a private.py or config/private.py file.
+Default settings. Should be overridden in a private.py or config/private.py
+file.
 """
 
 import os
@@ -7,9 +8,9 @@ import os
 DEBUG = False
 
 ## Search Filters
-SEARCH_FILTERS = {'query': '',          # The search terms you want to use.
-                  'min_bedrooms': 0,    # The minimum number of bedrooms you want.
-                  'min_bathrooms': 0}   # The minimum number of bathrooms you want.
+SEARCH_FILTERS = {'query': '',          # Search terms you want to use.
+                  'min_bedrooms': 0,    # Minimum number of bedrooms you want.
+                  'min_bathrooms': 0}   # Minimum number of bathrooms you want.
 
 # The minimum rent you want to pay per month.
 MIN_PRICE = 0
@@ -20,7 +21,10 @@ MAX_PRICE = 9999999
 # The maximum price per room you want to pay per month. Filtered in the code.
 MAX_PER_ROOM = 999999
 
-# Additional custom filter. If None, it's ignored. Otherwise, SEARCH_FILTERS.min_bedrooms is overrode with 3, and for results with exactly 3 bedrooms it will filter by maximum price per room you want to pay per month, defined here.
+# Additional custom filter. If None, it's ignored. Otherwise, 
+# SEARCH_FILTERS.min_bedrooms is overrode with 3, and for results with exactly
+# 3 bedrooms it will filter by maximum price per room you want to pay per
+# month, defined here.
 MAX_PER_ROOM_3BR = None
 
 ## Location preferences
@@ -31,14 +35,16 @@ MAX_PER_ROOM_3BR = None
 CRAIGSLIST_SITE = 'sfbay'
 
 # What Craigslist subdirectories to search on.
-# For instance, https://sfbay.craigslist.org/eby/ is the East Bay, and https://sfbay.craigslist.org/sfc/ is San Francisco.
+# For instance, https://sfbay.craigslist.org/eby/ is the East Bay, and
+# https://sfbay.craigslist.org/sfc/ is San Francisco.
 # You only need the last three letters of the URLs.
 AREAS = ['eby', 'sfc', 'sby', 'nby']
 
-# A list of neighborhoods and coordinates that you want to look for apartments in.  Any listing that has coordinates
-# attached will be checked to see which area it is in.  If there's a match, it will be annotated with the area
-# name.  If no match, the neighborhood field, which is a string, will be checked to see if it matches
-# anything in NEIGHBORHOODS.
+# A list of neighborhoods and coordinates that you want to look for apartments
+# in.  Any listing that has coordinates attached will be checked to see which
+# area it is in.  If there's a match, it will be annotated with the area
+# name.  If no match, the neighborhood field, which is a string, will be
+# checked to see if it matches anything in NEIGHBORHOODS.
 BOXES = {
     'adams_point': [
         [37.80789, -122.25000],
@@ -86,19 +92,28 @@ BOXES = {
     ]
 }
 
-# A list of neighborhood names to look for in the Craigslist neighborhood name field. If a listing doesn't fall into
-# one of the boxes you defined, it will be checked to see if the neighborhood name it was listed under matches one
-# of these.  This is less accurate than the boxes, because it relies on the owner to set the right neighborhood,
-# but it also catches listings that don't have coordinates (many listings are missing this info).
-NEIGHBORHOODS = ['berkeley north', 'berkeley', 'rockridge', 'adams point', 'oakland lake merritt', 'cow hollow', 'piedmont', 'pac hts', 'pacific heights', 'lower haight', 'inner sunset', 'outer sunset', 'presidio', 'palo alto', 'richmond / seacliff', 'haight ashbury', 'alameda', 'twin peaks', 'noe valley', 'bernal heights', 'glen park', 'sunset', 'mission district', 'potrero hill', 'dogpatch']
+# A list of neighborhood names to look for in the Craigslist neighborhood name
+# field. If a listing doesn't fall into one of the boxes you defined, it will
+# be checked to see if the neighborhood name it was listed under matches one
+# of these.  This is less accurate than the boxes, because it relies on the
+# owner to set the right neighborhood, but it also catches listings that don't
+# have coordinates (many listings are missing this info).
+NEIGHBORHOODS = ['berkeley north', 'berkeley', 'rockridge', 'adams point',
+                 'oakland lake merritt', 'cow hollow', 'piedmont', 'pac hts',
+                 'pacific heights', 'lower haight', 'inner sunset',
+                 'outer sunset', 'presidio', 'palo alto',
+                 'richmond / seacliff', 'haight ashbury', 'alameda',
+                 'twin peaks', 'noe valley', 'bernal heights', 'glen park',
+                 'sunset', 'mission district', 'potrero hill', 'dogpatch']
 
 ## Transit preferences
 
 # The farthest you want to live from a transit stop.
 MAX_TRANSIT_DIST = 2 # kilometers
 
-# Transit stations you want to check against.  Every coordinate here will be checked against each listing,
-# and the closest station name will be added to the result and posted into Slack.
+# Transit stations you want to check against.  Every coordinate here will be 
+# checked against each listing, and the closest station name will be added to
+# the result and posted into Slack.
 TRANSIT_STATIONS = {
     'oakland_19th_bart': [37.8118051,-122.2720873],
     'macarthur_bart': [37.8265657,-122.2686705],
@@ -110,7 +125,7 @@ TRANSIT_STATIONS = {
 ## Search type preferences
 
 # The Craigslist section underneath housing that you want to search in.
-# For instance, https://sfbay.craigslist.org/search/apa find apartments for rent.
+# For e.g., https://sfbay.craigslist.org/search/apa find apartments for rent.
 # https://sfbay.craigslist.org/search/sub finds sublets.
 # You only need the last 3 letters of the URLs.
 CRAIGSLIST_HOUSING_SECTION = 'apa'
@@ -126,7 +141,8 @@ SLEEP_INTERVAL = 20 * 60 # 20 minutes
 # How long we should pause scraping nightly.
 OVERNIGHT_SLEEP_INTERVAL = 9 * 60 * 60 # 9 hours
 
-# What time (military time) we want to resume scraping. Scraping pauses at 00:00 (midnight) local time.
+# What time (military time) we want to resume scraping. Scraping pauses at
+# 00:00 (midnight) local time.
 WAKEUP_TIME = 9
 
 # Which slack channel to post the listings into.

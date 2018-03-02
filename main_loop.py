@@ -7,7 +7,8 @@ import random
 import datetime as dt
 
 def main():
-    input('This version should be run from scraper.py. Otherwise, press any key to continue.')
+    input('This version should be run from scraper.py. Otherwise, press any ' \
+          'key to continue.')
     while True:
         if dt.datetime.now().hour >= settings.WAKEUP_TIME:
             print("{}: Starting scrape cycle".format(time.ctime()))
@@ -20,7 +21,8 @@ def main():
                 print("Error with the scraping:", sys.exc_info()[0])
                 traceback.print_exc()
             else:
-                print("{}: Successfully finished scraping".format(time.ctime()))
+                print("{}: Successfully finished " \
+                      "scraping".format(time.ctime()))
             if settings.SLEEP_INTERVAL == 0:
                 # randomize polling time for Windows (no cron)
                 skip_flag = random.randint(1,1000)
@@ -40,8 +42,9 @@ def main():
                 time.sleep(settings.SLEEP_INTERVAL)
         else:
             if settings.SLEEP_INTERVAL == 0:
-                # The logic here ensures proper sleep length if you launch the script overnight
-                time.sleep(settings.OVERNIGHT_SLEEP_INTERVAL - dt.datetime.now().hour*60*60)
+                # Ensure proper sleep length if you launch the script overnight
+                time.sleep(settings.OVERNIGHT_SLEEP_INTERVAL
+                           - dt.datetime.now().hour*60*60)
                 print("{}: Overnight sleep".format(time.ctime()))
 
 if __name__ == "__main__":

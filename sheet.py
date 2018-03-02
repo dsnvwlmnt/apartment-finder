@@ -32,7 +32,7 @@ def get_credentials():
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir,
-                                   'sheets.googleapis.com-python-quickstart.json')
+                                'sheets.googleapis.com-python-quickstart.json')
 
     store = Storage(credential_path)
     credentials = store.get()
@@ -64,10 +64,11 @@ def post_listing_to_sheet(sheet, listing):
                     listing['name'],
                     listing['url']]]
     }
-    sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                         range='A1:A1',
-                                         body=body,
-                                         valueInputOption='USER_ENTERED').execute()
+    sheet.spreadsheets().values().append(
+                                   spreadsheetId=settings.SHEET_ID, 
+                                   range='A1:A1',
+                                   body=body,
+                                   valueInputOption='USER_ENTERED').execute()
 
 def post_listings_to_sheet(sheet, listings):
     """
@@ -89,11 +90,13 @@ def post_listings_to_sheet(sheet, listings):
                        listing['url']])
 
     body = {'values': values}
-    sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                         range='Database!A1:A1',
-                                         body=body,
-                                         valueInputOption='USER_ENTERED').execute()
-    sheet.spreadsheets().values().append(spreadsheetId=settings.SHEET_ID,
-                                         range='A1:A1',
-                                         body=body,
-                                         valueInputOption='USER_ENTERED').execute()
+    sheet.spreadsheets().values().append(
+                                     spreadsheetId=settings.SHEET_ID,
+                                     range='Database!A1:A1',
+                                     body=body,
+                                     valueInputOption='USER_ENTERED').execute()
+    sheet.spreadsheets().values().append(
+                                     spreadsheetId=settings.SHEET_ID,
+                                     range='A1:A1',
+                                     body=body,
+                                     valueInputOption='USER_ENTERED').execute()
