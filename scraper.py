@@ -120,7 +120,7 @@ def scrape_area(area, cl_bugged):
         if cl_bugged:
             print('{}: Craigslist prices are bugged, implement+test ' \
                   'beautifulsoup price scraping!'.format(time.ctime()))
-            #get the price from title or post body using beautifulsoup
+            # TODO: get the price from title or post body using beautifulsoup
             if price < settings.MIN_PRICE or price > settings.MAX_PRICE
                 continue
         else:
