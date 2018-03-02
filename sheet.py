@@ -1,7 +1,7 @@
 import os
-import settings
 from oauth2client import client, tools
 from oauth2client.file import Storage
+import settings
 
 try:
     import argparse
@@ -55,7 +55,8 @@ def post_listing_to_sheet(sheet, listing):
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
     body = {
-        'values': [[listing['price'],
+        'values': [[listing['created'],
+                    listing['price'],
                     listing['bedrooms'],
                     price_per_bedroom,
                     listing['where'],
@@ -80,7 +81,8 @@ def post_listings_to_sheet(sheet, listings):
             pass
         bedrooms = int(listing['bedrooms'])
         price_per_bedroom = price // bedrooms
-        values.append([listing['price'],
+        values.append([listing['created'],
+                       listing['price'],
                        listing['bedrooms'],
                        price_per_bedroom,
                        listing['where'],

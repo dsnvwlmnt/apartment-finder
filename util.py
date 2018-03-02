@@ -1,5 +1,5 @@
-import settings
 import math
+import settings
 
 def coord_distance(lat1, lon1, lat2, lon2):
     """
@@ -47,12 +47,13 @@ def post_listing_to_slack(sc, listing):
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
 
-    desc = "{}*{}* | {} | {} | <{}>".format(listing['price'] + ' / '
-                                            + listing['bedrooms'] + 'br = ',
-                                            '$' + str(price_per_bedroom),
-                                            listing['where'],
-                                            listing['name'],
-                                            listing['url'])
+    desc = "{} | {}*{}* | {} | {} | <{}>".format(
+        listing['created'],
+        listing['price'] + ' / ' + listing['bedrooms'] + 'br = ',
+        '$' + str(price_per_bedroom),
+        listing['where'],
+        listing['name'],
+        listing['url'])
     sc.api_call('chat.postMessage',
                 channel=settings.SLACK_CHANNEL,
                 text=desc,

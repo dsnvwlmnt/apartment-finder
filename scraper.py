@@ -1,6 +1,5 @@
 import sys
 import time
-import settings
 import traceback
 from craigslist import CraigslistHousing
 from dateutil.parser import parse
@@ -8,8 +7,9 @@ from slackclient import SlackClient
 from httplib2 import Http
 from apiclient import discovery
 from sheet import get_credentials, post_listings_to_sheet
-from util import post_listing_to_slack, find_points_of_interest
+import settings
 import database as db
+from util import post_listing_to_slack, find_points_of_interest
 
 def scrape_area(area, cl_bugged):
     """
