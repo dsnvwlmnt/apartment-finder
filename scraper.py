@@ -1,66 +1,17 @@
-from craigslist import CraigslistHousing
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean
-from sqlalchemy.orm import sessionmaker
-from dateutil.parser import parse
-from util import post_listing_to_slack, find_points_of_interest
-from slackclient import SlackClient
 import sys
 import time
 import settings
 import traceback
-import urllib.request
+
+from craigslist import CraigslistHousing
+from dateutil.parser import parse
+from slackclient import SlackClient
 from httplib2 import Http
 from apiclient import discovery
 from sheet import get_credentials, post_listings_to_sheet
 
-engine = create_engine('sqlite:///listings.db', echo=False)
-
-Base = declarative_base()
-
-class RunLog(Base):
-    """
-    A table to store a log of program executions.
-    """
-
-    __tablename__ = 'runlog'
-
-    id = Column(Integer, primary_key=True)
-    debug = Column(Boolean)
-    time_start = Column(DateTime)
-    time_end = Column(DateTime)
-    ip_start = Column(String)
-    ip_end = Column(String)
-    num_results = Column(Integer)
-    exit_code = Column(Integer)
-    error_message = Column(String)
-
-class Listing(Base):
-    """
-    A table to store data on craigslist listings.
-    """
-
-    __tablename__ = 'listings'
-
-    id = Column(Integer, primary_key=True)
-    link = Column(String, unique=True)
-    created = Column(DateTime)
-    geotag = Column(String)
-    lat = Column(Float)
-    lon = Column(Float)
-    name = Column(String)
-    price = Column(Float)
-    location = Column(String)
-    cl_id = Column(Integer, unique=True)
-    area = Column(String)
-    bart_stop = Column(String)
-    bedrooms = Column(Integer)
-
-Base.metadata.create_all(engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
+from util import post_listing_to_slack, find_points_of_interest
+import database as db
 
 def scrape_area(area, cl_bugged):
     """
@@ -102,7 +53,7 @@ def scrape_area(area, cl_bugged):
         except Exception:
             continue
 
-        listing = session.query(Listing).filter_by(cl_id=result["id"]).first()
+        listing = db.query(result['id'])
         # Don't store the listing if it already exists.
         if listing:
             continue
@@ -176,8 +127,8 @@ def scrape_area(area, cl_bugged):
                           bedrooms=bedrooms)
 
         # Save the listing so we don't grab it again.
-        session.add(listing)
-        session.commit()
+        db.add(listing)
+        db.commit()
 
         # Return the result if it's near a bart station, or if it is in an area
         # we defined.
