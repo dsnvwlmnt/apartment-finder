@@ -1,10 +1,10 @@
-from scraper import do_scrape
 import settings
 import time
 import sys
 import traceback
 import random
 import datetime as dt
+from scraper import do_scrape
 
 def scrape():
     print("{}: Starting scrape cycle".format(time.ctime()))

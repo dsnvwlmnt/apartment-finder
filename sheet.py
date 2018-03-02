@@ -1,9 +1,7 @@
 import os
-
+import settings
 from oauth2client import client, tools
 from oauth2client.file import Storage
-
-import settings
 
 try:
     import argparse
