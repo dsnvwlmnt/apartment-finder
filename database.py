@@ -54,6 +54,10 @@ session = Session()
 def query_cl_id(id):
     return session.query(Listing).filter_by(cl_id=id).first()
 
+def query_last_run():
+    results = session.query(RunLog).all()
+    return results[-1].num_results
+
 def add(record):
     session.add(record)
     session.commit()

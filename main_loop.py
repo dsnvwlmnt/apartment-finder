@@ -9,7 +9,7 @@ import settings
 import database as db
 from scraper import do_scrape
 
-def scrape():
+def scrape(run_log):
     print('{}: Starting scrape cycle'.format(time.ctime()))
     try:
         run_log.num_results = do_scrape()
@@ -51,11 +51,11 @@ def main():
                          .read().decode('utf8'))
 
     if settings.RUN_ONCE:
-        scrape()
+        scrape(run_log)
     else:
         while True:
             if dt.datetime.now().hour >= settings.WAKEUP_TIME:
-                scrape()
+                scrape(run_log)
                 if settings.DEBUG:
                     input('Going to sleep (press any key)...')
                 if settings.SLEEP_INTERVAL == 0:

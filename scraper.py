@@ -151,31 +151,31 @@ def do_scrape():
     Runs the craigslist scraper, and posts data to slack and Google sheets.
     """
 
-    # If the last run gave no results, check for CL price bug (can't filter by
+    if settings.DEBUG:
+        input('lastrun num_results (press any key)...: ' + db.query_last_run())
+    # If the last run gave 0 results, test for CL price bug (can't filter by
     # price, because no price in title). For e.g., if CL is bugged, this URL
     # will give 0 results:
     # https://vancouver.craigslist.ca/search/van/apa?postedToday=1&min_price=1
-#TODO insert db check of last run's num_results
-#if last_run_no_results
-    cl_test = CraigslistHousing(site=settings.CRAIGSLIST_SITE,
+    if db.query_last_run() == 0:
+        cl_test = CraigslistHousing(
+                                site=settings.CRAIGSLIST_SITE,
                                 area=settings.AREAS[0],
                                 category=settings.CRAIGSLIST_HOUSING_SECTION,
                                 filters={'posted_today': True, 'min_price': 1})
-    if settings.DEBUG:
-        input('Calling test generator (press any key)...')
-    gen_test = cl_test.get_results(limit=1)
-    try:
-        result_test = next(gen_test)
-    except StopIteration:
-        cl_bugged = True
+        if settings.DEBUG:
+            input('Calling test generator (press any key)...')
+        gen_test = cl_test.get_results(limit=1)
+        try:
+            result_test = next(gen_test)
+        except StopIteration:
+            cl_bugged = True
 
     # Get all the results from craigslist.
     all_results = []
     for area in settings.AREAS:
         all_results += scrape_area(area, cl_bugged)
 
-    # Store number of results for this run.
-    # TODO: add this to db: len(all_results)
     print("{}: Got {} results".format(time.ctime(), len(all_results)))
 
     if settings.SHEET_ID is not None:
