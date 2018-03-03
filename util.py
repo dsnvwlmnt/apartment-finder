@@ -13,7 +13,7 @@ def coord_distance(lat1, lon1, lat2, lon2):
     lon1, lat1, lon2, lat2 = map(math.radians, [lon1, lat1, lon2, lat2])
     dlon = lon2 - lon1
     dlat = lat2 - lat1
-    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2)
+    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2)\
         * math.sin(dlon/2)**2
     c = 2 * math.asin(math.sqrt(a))
     km = 6367 * c
@@ -48,7 +48,7 @@ def post_listing_to_slack(sc, listing):
     price_per_bedroom = price // bedrooms
 
     desc = "{} | {}*{}* | {} | {} | <{}>".format(
-        listing['created'],
+        listing['datetime'],
         listing['price'] + ' / ' + listing['bedrooms'] + 'br = ',
         '$' + str(price_per_bedroom),
         listing['where'],
@@ -83,12 +83,12 @@ def find_points_of_interest(geotag, location):
     # Check to see if the listing is near any transit stations.
     for station, coords in settings.TRANSIT_STATIONS.items():
         dist = coord_distance(coords[0], coords[1], geotag[0], geotag[1])
-        if (min_dist is None or dist < min_dist)
-                and dist < settings.MAX_TRANSIT_DIST:
+        if (min_dist is None) or (dist < min_dist)\
+                and (dist < settings.MAX_TRANSIT_DIST):
             bart = station
             near_bart = True
 
-        if (min_dist is None or dist < min_dist):
+        if (min_dist is None) or (dist < min_dist):
             bart_dist = dist
 
     # If the listing isn't in any of the boxes we defined, check to see if the

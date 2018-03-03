@@ -57,7 +57,7 @@ def post_listing_to_sheet(sheet, listing):
     bedrooms = int(listing['bedrooms'])
     price_per_bedroom = price // bedrooms
     body = {
-        'values': [[listing['created'],
+        'values': [[listing['datetime'],
                     listing['price'],
                     listing['bedrooms'],
                     price_per_bedroom,
@@ -85,7 +85,7 @@ def post_listings_to_sheet(sheet, listings):
             pass
         bedrooms = int(listing['bedrooms'])
         price_per_bedroom = price // bedrooms
-        values.append([listing['created'],
+        values.append([listing['datetime'],
                        listing['price'],
                        listing['bedrooms'],
                        price_per_bedroom,

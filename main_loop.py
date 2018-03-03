@@ -17,9 +17,11 @@ def scrape(run_log):
         print('Exiting...')
         run_log.time_end = parse(time.ctime())
         run_log.ip_end = urllib.request.urlopen('https://ident.me')\
-                            .read().decode('utf8'))
-		run_log.exit_code = 1
-		run_log.status_message = 'KeyboardInterrupt'
+                            .read().decode('utf8')
+        run_log.exit_code = 1
+        run_log.status_message = 'KeyboardInterrupt'
+        if settings.DEBUG:
+            input('run_log start time: {}'.format(run_log.time_start))
         db.add(run_log)
         sys.exit(1)
     except Exception as exc:
@@ -27,28 +29,30 @@ def scrape(run_log):
         traceback.print_exc()
         run_log.time_end = parse(time.ctime())
         run_log.ip_end = urllib.request.urlopen('https://ident.me')\
-                            .read().decode('utf8'))
-		run_log.exit_code = -1
-		run_log.status_message = 'Error with the scraping:'
+                            .read().decode('utf8')
+        run_log.exit_code = -1
+        run_log.status_message = 'Error with the scraping:'\
                                  + sys.exc_info()[0]
+        if settings.DEBUG:
+            input('run_log start time: {}'.format(run_log.time_start))
         db.add(run_log)
         sys.exit(-1)
     else:
         print('{}: Successfully finished scraping'.format(time.ctime()))
         run_log.time_end = parse(time.ctime())
         run_log.ip_end = urllib.request.urlopen('https://ident.me')\
-                            .read().decode('utf8'))
-		run_log.exit_code = 0
-		run_log.status_message = 'Successfully finished scraping'
+                            .read().decode('utf8')
+        run_log.exit_code = 0
+        run_log.status_message = 'Successfully finished scraping'
         db.add(run_log)
         sys.exit(0)
 
 def main():
-    run_log = RunLog(debug=settings.DEBUG,
-                     run_once=settings.RUN_ONCE,
-                     time_start=parse(time.ctime()),
-                     ip_start=urllib.request.urlopen('https://ident.me')\
-                         .read().decode('utf8'))
+    run_log = db.RunLog(debug=settings.DEBUG,
+                        run_once=settings.RUN_ONCE,
+                        time_start=parse(time.ctime()),
+                        ip_start=urllib.request.urlopen('https://ident.me')\
+                            .read().decode('utf8'))
 
     if settings.RUN_ONCE:
         scrape(run_log)

@@ -19,8 +19,8 @@ def scrape_area(area, cl_bugged=False):
     """
 
     if not cl_bugged:
-        settings.SEARCH_FILTERS['min_price'] = MIN_PRICE
-		settings.SEARCH_FILTERS['max_price'] = MAX_PRICE
+        settings.SEARCH_FILTERS['min_price'] = settings.MIN_PRICE
+        settings.SEARCH_FILTERS['max_price'] = settings.MAX_PRICE
 
     if settings.MAX_PER_ROOM_3BR is not None:
         settings.SEARCH_FILTERS['min_bedrooms'] = 3
@@ -34,7 +34,7 @@ def scrape_area(area, cl_bugged=False):
         if settings.DEBUG:
             input('Generator initial call (press any key)...')
         if settings.DEBUG:
-            gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=1)
+            gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=5)
         else:
             gen = cl_h.get_results(sort_by='newest', geotagged=True)
     except (ConnectionError, ValueError):
@@ -90,12 +90,12 @@ def scrape_area(area, cl_bugged=False):
 
         price = 0
         if cl_bugged:
-            print('{}: Craigslist prices are bugged, implement+test ' \
-                  'beautifulsoup price scraping!'.format(time.ctime()))
+            print('{}: Craigslist prices are bugged, implement+test '
+                  + 'beautifulsoup price scraping!'.format(time.ctime()))
             # TODO: get the price from title or post body using beautifulsoup.
             # Until this is coded, you'll get no new results when CL is bugged.
             # Which is fine since you wouldn't get any results anyway.
-            if price < settings.MIN_PRICE or price > settings.MAX_PRICE
+            if (price < settings.MIN_PRICE) or (price > settings.MAX_PRICE):
                 continue
         else:
             # Try parsing the price.
@@ -124,17 +124,17 @@ def scrape_area(area, cl_bugged=False):
         if settings.DEBUG:
             input('Create listing and add to db (press any key)...')
         # Create the listing object.
-        listing = Listing(link=result["url"],
-                          created=parse(result["datetime"]),
-                          lat=lat,
-                          lon=lon,
-                          name=result["name"],
-                          price=price,
-                          location=result["where"],
-                          cl_id=result["id"],
-                          area=result["area"],
-                          bart_stop=result["bart"],
-                          bedrooms=bedrooms)
+        listing = db.Listing(link=result["url"],
+                             created=parse(result["datetime"]),
+                             lat=lat,
+                             lon=lon,
+                             name=result["name"],
+                             price=price,
+                             location=result["where"],
+                             cl_id=result["id"],
+                             area=result["area"],
+                             bart_stop=result["bart"],
+                             bedrooms=bedrooms)
 
         # Save the listing so we don't grab it again.
         db.add(listing)
@@ -152,12 +152,14 @@ def do_scrape():
     """
 
     if settings.DEBUG:
-        input('lastrun num_results (press any key)...: ' + db.query_last_run())
+        input('lastrun num_results (press any key)...: {}'\
+                  .format(db.query_last_run()))
     # If the last run gave 0 results, test for CL price bug (can't filter by
     # price, because no price in title). For e.g., if CL is bugged, this URL
     # will give 0 results:
     # https://vancouver.craigslist.ca/search/van/apa?postedToday=1&min_price=1
-    if db.query_last_run() == 0:
+    cl_bugged = False
+    if (db.query_last_run() == 0) and not settings.DEBUG:
         cl_test = CraigslistHousing(
                                 site=settings.CRAIGSLIST_SITE,
                                 area=settings.AREAS[0],
@@ -178,26 +180,27 @@ def do_scrape():
 
     print("{}: Got {} results".format(time.ctime(), len(all_results)))
 
-    if settings.SHEET_ID is not None:
-        # Authenticate and create Google sheet service.
-        credentials = get_credentials()
-        http = credentials.authorize(Http())
-        discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
-                        'version=v4')
-        service = discovery.build('sheets', 'v4', http=http,
-                                  discoveryServiceUrl=discoveryUrl)
+    if all_results:
+        if settings.SHEET_ID is not None:
+            # Authenticate and create Google sheet service.
+            credentials = get_credentials()
+            http = credentials.authorize(Http())
+            discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
+                            'version=v4')
+            service = discovery.build('sheets', 'v4', http=http,
+                                      discoveryServiceUrl=discoveryUrl)
 
-        # Post all results to sheet simultaneously, to avoid Google api quotas
-        post_listings_to_sheet(service, all_results)
+            # Post all results to simultaneously, to avoid Google api quotas.
+            post_listings_to_sheet(service, all_results)
 
-    if settings.SLACK_TOKEN != '':
-        # Create a slack client.
-        sc = SlackClient(settings.SLACK_TOKEN)
+        if settings.SLACK_TOKEN != '':
+            # Create a slack client.
+            sc = SlackClient(settings.SLACK_TOKEN)
 
-        if settings.DEBUG:
-            input('Going to loop post_listing_to_slack (press any key)...')
-        # Post each result to slack.
-        for result in all_results:
-            post_listing_to_slack(sc, result)
+            if settings.DEBUG:
+                input('Going to loop post_listing_to_slack (press any key)...')
+            # Post each result to slack.
+            for result in all_results:
+                post_listing_to_slack(sc, result)
 
     return len(all_results)

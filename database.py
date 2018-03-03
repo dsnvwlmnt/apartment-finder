@@ -56,7 +56,10 @@ def query_cl_id(id):
 
 def query_last_run():
     results = session.query(RunLog).all()
-    return results[-1].num_results
+    if len(results) == 0:
+        return 1
+    else:
+        return results[-1].num_results
 
 def add(record):
     session.add(record)
