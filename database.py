@@ -21,7 +21,7 @@ class RunLog(Base):
     ip_end = Column(String)
     num_results = Column(Integer)
     exit_code = Column(Integer)
-    error_message = Column(String)
+    status_message = Column(String)
 
 class Listing(Base):
     """
@@ -51,11 +51,9 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def query(id):
+def query_cl_id(id):
     return session.query(Listing).filter_by(cl_id=id).first()
 
-def add(listing):
-    session.add(listing)
-
-def commit():
+def add(record):
+    session.add(record)
     session.commit()

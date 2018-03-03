@@ -2,27 +2,54 @@ import time
 import sys
 import traceback
 import random
+import urllib.request
 import datetime as dt
+from dateutil.parser import parse
 import settings
 import database as db
 from scraper import do_scrape
 
 def scrape():
-    print("{}: Starting scrape cycle".format(time.ctime()))
+    print('{}: Starting scrape cycle'.format(time.ctime()))
     try:
-        do_scrape()
+        run_log.num_results = do_scrape()
     except KeyboardInterrupt:
-        print("Exiting....")
+        print('Exiting...')
+        run_log.time_end = parse(time.ctime())
+        run_log.ip_end = urllib.request.urlopen('https://ident.me')\
+                            .read().decode('utf8'))
+		run_log.exit_code = 1
+		run_log.status_message = 'KeyboardInterrupt'
+        db.add(run_log)
         sys.exit(1)
     except Exception as exc:
-        print("Error with the scraping:", sys.exc_info()[0])
+        print('Error with the scraping:', sys.exc_info()[0])
         traceback.print_exc()
-        sys.exit(1)
+        run_log.time_end = parse(time.ctime())
+        run_log.ip_end = urllib.request.urlopen('https://ident.me')\
+                            .read().decode('utf8'))
+		run_log.exit_code = -1
+		run_log.status_message = 'Error with the scraping:'
+                                 + sys.exc_info()[0]
+        db.add(run_log)
+        sys.exit(-1)
     else:
-        print("{}: Successfully finished scraping".format(time.ctime()))
+        print('{}: Successfully finished scraping'.format(time.ctime()))
+        run_log.time_end = parse(time.ctime())
+        run_log.ip_end = urllib.request.urlopen('https://ident.me')\
+                            .read().decode('utf8'))
+		run_log.exit_code = 0
+		run_log.status_message = 'Successfully finished scraping'
+        db.add(run_log)
         sys.exit(0)
 
 def main():
+    run_log = RunLog(debug=settings.DEBUG,
+                     run_once=settings.RUN_ONCE,
+                     time_start=parse(time.ctime()),
+                     ip_start=urllib.request.urlopen('https://ident.me')\
+                         .read().decode('utf8'))
+
     if settings.RUN_ONCE:
         scrape()
     else:

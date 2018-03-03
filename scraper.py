@@ -11,7 +11,7 @@ import settings
 import database as db
 from util import post_listing_to_slack, find_points_of_interest
 
-def scrape_area(area, cl_bugged):
+def scrape_area(area, cl_bugged=False):
     """
     Scrapes craigslist for a geographic area and finds the latest listings.
     :param area:
@@ -55,7 +55,9 @@ def scrape_area(area, cl_bugged):
         except Exception:
             continue
 
-        listing = db.query(result['id'])
+        if settings.DEBUG:
+            input('Query listing on db (press any key)...')
+        listing = db.query_cl_id(result['id'])
         # Don't store the listing if it already exists.
         if listing:
             continue
@@ -119,6 +121,8 @@ def scrape_area(area, cl_bugged):
                ):
                 continue
 
+        if settings.DEBUG:
+            input('Create listing and add to db (press any key)...')
         # Create the listing object.
         listing = Listing(link=result["url"],
                           created=parse(result["datetime"]),
@@ -134,7 +138,6 @@ def scrape_area(area, cl_bugged):
 
         # Save the listing so we don't grab it again.
         db.add(listing)
-        db.commit()
 
         # Return the result if it's near a bart station, or if it is in an area
         # we defined.
@@ -154,7 +157,6 @@ def do_scrape():
     # https://vancouver.craigslist.ca/search/van/apa?postedToday=1&min_price=1
 #TODO insert db check of last run's num_results
 #if last_run_no_results
-    cl_bugged = False
     cl_test = CraigslistHousing(site=settings.CRAIGSLIST_SITE,
                                 area=settings.AREAS[0],
                                 category=settings.CRAIGSLIST_HOUSING_SECTION,
@@ -196,3 +198,5 @@ def do_scrape():
     # Post each result to slack.
     for result in all_results:
         post_listing_to_slack(sc, result)
+
+    return len(all_results)
