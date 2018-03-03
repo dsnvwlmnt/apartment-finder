@@ -190,13 +190,14 @@ def do_scrape():
         # Post all results to sheet simultaneously, to avoid Google api quotas
         post_listings_to_sheet(service, all_results)
 
-    # Create a slack client.
-    sc = SlackClient(settings.SLACK_TOKEN)
+    if settings.SLACK_TOKEN != '':
+        # Create a slack client.
+        sc = SlackClient(settings.SLACK_TOKEN)
 
-    if settings.DEBUG:
-        input('Going to loop post_listing_to_slack (press any key)...')
-    # Post each result to slack.
-    for result in all_results:
-        post_listing_to_slack(sc, result)
+        if settings.DEBUG:
+            input('Going to loop post_listing_to_slack (press any key)...')
+        # Post each result to slack.
+        for result in all_results:
+            post_listing_to_slack(sc, result)
 
     return len(all_results)
