@@ -132,6 +132,11 @@ CRAIGSLIST_HOUSING_SECTION = 'apa'
 
 DEBUG = False
 
+# Test for CL price bug (can't filter by price, because no price in title).
+# For e.g., if CL is bugged, this URL will give 0 results:
+# https://vancouver.craigslist.ca/search/van/apa?postedToday=1&min_price=1
+CL_BUG_CHECK = True
+
 # Setting this to True will prevent looping forever and ignore the sleep
 # interval and wakeup settings below.
 RUN_ONCE = False

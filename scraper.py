@@ -44,7 +44,7 @@ def scrape_area(area, cl_bugged=False):
 
     while True:
         if settings.DEBUG:
-            input('Generator next call (press any key)...')
+            print('Generator next call.')
         try:
             result = next(gen)
         except StopIteration:
@@ -56,7 +56,7 @@ def scrape_area(area, cl_bugged=False):
             continue
 
         if settings.DEBUG:
-            input('Query listing on db (press any key)...')
+            print('Query listing to see if in db.')
         listing = db.query_cl_id(result['id'])
         # Don't store the listing if it already exists.
         if listing:
@@ -90,9 +90,10 @@ def scrape_area(area, cl_bugged=False):
 
         price = 0
         if cl_bugged:
-            print('{}: Craigslist prices are bugged, implement+test '
+            print('{}: Craigslist prices are bugged, implement and test '
                   + 'beautifulsoup price scraping!'.format(time.ctime()))
             # TODO: get the price from title or post body using beautifulsoup.
+            # See https://github.com/bschlenk/python-craigslist
             # Until this is coded, you'll get no new results when CL is bugged.
             # Which is fine since you wouldn't get any results anyway.
             if (price < settings.MIN_PRICE) or (price > settings.MAX_PRICE):
@@ -151,27 +152,25 @@ def do_scrape():
     Runs the craigslist scraper, and posts data to slack and Google sheets.
     """
 
-    if settings.DEBUG:
-        input('lastrun num_results (press any key)...: {}'\
-                  .format(db.query_last_run()))
-    # If the last run gave 0 results, test for CL price bug (can't filter by
-    # price, because no price in title). For e.g., if CL is bugged, this URL
-    # will give 0 results:
-    # https://vancouver.craigslist.ca/search/van/apa?postedToday=1&min_price=1
     cl_bugged = False
-    if (db.query_last_run() == 0) and not settings.DEBUG:
-        cl_test = CraigslistHousing(
+    if settings.CL_BUG_CHECK:
+        if settings.DEBUG:
+            input('lastrun num_results (press any key)...: {}'\
+                      .format(db.query_last_run()))
+        # If the last run gave 0 results, test for CL price bug.
+        if db.query_last_run() == 0:
+            cl_test = CraigslistHousing(
                                 site=settings.CRAIGSLIST_SITE,
                                 area=settings.AREAS[0],
                                 category=settings.CRAIGSLIST_HOUSING_SECTION,
                                 filters={'posted_today': True, 'min_price': 1})
-        if settings.DEBUG:
-            input('Calling test generator (press any key)...')
-        gen_test = cl_test.get_results(limit=1)
-        try:
-            result_test = next(gen_test)
-        except StopIteration:
-            cl_bugged = True
+            if settings.DEBUG:
+                input('Calling test generator (press any key)...')
+            gen_test = cl_test.get_results(limit=1)
+            try:
+                result_test = next(gen_test)
+            except StopIteration:
+                cl_bugged = True
 
     # Get all the results from craigslist.
     all_results = []
