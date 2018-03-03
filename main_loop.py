@@ -20,8 +20,10 @@ def scrape(run_log):
                             .read().decode('utf8')
         run_log.exit_code = 1
         run_log.status_message = 'KeyboardInterrupt'
-        if settings.DEBUG:
-            input('run_log start time: {}'.format(run_log.time_start))
+        if not run_log.num_results:
+            # Number of results is unknown in this scope. In future could
+            # assign num_results from within scraper.py to have them. Minor.
+            run_log.num_results = -1
         db.add(run_log)
         sys.exit(1)
     except Exception as exc:
@@ -34,7 +36,8 @@ def scrape(run_log):
         run_log.status_message = 'Error with the scraping:'\
                                  + sys.exc_info()[0]
         if settings.DEBUG:
-            input('run_log start time: {}'.format(run_log.time_start))
+            input('sys.exit(-1) is confirmed reachable.\
+                  Subtask to do: confirm that run_log works in this case.')
         db.add(run_log)
         sys.exit(-1)
     else:

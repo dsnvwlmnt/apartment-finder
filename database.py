@@ -55,11 +55,13 @@ def query_cl_id(id):
     return session.query(Listing).filter_by(cl_id=id).first()
 
 def query_last_run():
+    # Find out how many results were gained last run.
     results = session.query(RunLog).all()
-    if len(results) == 0:
-        return 1
-    else:
+    if results:
         return results[-1].num_results
+    else:
+        # runlog table is empty (probably your first run).
+        return 1
 
 def add(record):
     session.add(record)
